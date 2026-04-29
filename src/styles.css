@@ -83,8 +83,10 @@ main {
 
     position: absolute;
     background-color: rgba(255, 255, 255);
-    top: 50%; /* position top edge of element at midheight of container*/
-    transform: translateY(-50%); /* move the element so that center is aligned to midheight instead */
+    top: 50%;
+    /* position top edge of element at midheight of container*/
+    transform: translateY(-50%);
+    /* move the element so that center is aligned to midheight instead */
     left: -30px;
 }
 
@@ -114,7 +116,7 @@ main {
 }
 
 .todo-heading .due-date {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
 }
 
 .low-priority {
@@ -135,7 +137,6 @@ main {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    gap: 20px;
 }
 
 .todo-description {
@@ -145,19 +146,16 @@ main {
 
 .controllers {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
+    gap: 10px;
 }
 
-.priority-btn,
 .edit-btn,
 .delete-btn {
     color: black;
-    padding: 4px 8px;
     border-radius: 20px;
-    border: 1px solid black;
 }
 
-.priority-btn:hover,
 .edit-btn:hover,
 .delete-btn:hover {
     cursor: pointer;

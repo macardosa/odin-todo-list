@@ -1,6 +1,9 @@
 import { da } from "date-fns/locale";
 import { TodoItem } from "./TodoItem.js";
-import doubleArrowDownIcon from "./assets/icons/double-arrow-down.svg";
+import doubleArrowDownIcon from "./assets/icons/double-arrow-down-icon.svg";
+import doubleArrowUpIcon from "./assets/icons/double-arrow-up-icon.svg";
+import editIcon from "./assets/icons/edit-icon.svg";
+import deleteIcon from "./assets/icons/delete-icon.svg";
 
 export const createDisplayManager = (TodoList) => {
     const main = document.querySelector("main");
@@ -19,10 +22,10 @@ export const createDisplayManager = (TodoList) => {
         headingSection.appendChild(title);
 
         // add icon button to display details
-        const icon = document.createElement("img");
-        icon.src = doubleArrowDownIcon;
-        icon.classList.add("todo-icon");
-        headingSection.appendChild(icon);
+        const seeDetailsIcon = document.createElement("img");
+        seeDetailsIcon.src = doubleArrowDownIcon;
+        seeDetailsIcon.classList.add("todo-icon");
+        headingSection.appendChild(seeDetailsIcon);
 
         const dueDate = document.createElement("div");
         const daysLeft = todo.timeLeft();
@@ -70,18 +73,10 @@ export const createDisplayManager = (TodoList) => {
         // add cotrol buttons
         const controllers = document.createElement("div");
         controllers.classList.add("controllers");
-        // button to change priority
-        const priorityBtn = document.createElement("div");
-        priorityBtn.textContent = `Priority: ${todo.priority}`;
-        priorityBtn.classList.add("priority-btn", `${todo.priority.toLowerCase()}`);
-        priorityBtn.addEventListener("click", (e) => {
-            console.log("clicked priority btn", todo.title);
-        });
-        controllers.appendChild(priorityBtn);
 
         // button to edit task
-        const editBtn = document.createElement("div");
-        editBtn.textContent = "Edit Task";
+        const editBtn = document.createElement("img");
+        editBtn.src = editIcon;
         editBtn.classList.add("edit-btn", `${todo.priority.toLowerCase()}`);
         controllers.appendChild(editBtn);
         editBtn.addEventListener("click", (e) => {
@@ -89,8 +84,8 @@ export const createDisplayManager = (TodoList) => {
         });
 
         // button to delete task
-        const deleteBtn = document.createElement("div");
-        deleteBtn.textContent = "Delete";
+        const deleteBtn = document.createElement("img");
+        deleteBtn.src = deleteIcon;
         deleteBtn.classList.add("delete-btn", `${todo.priority.toLowerCase()}`);
         controllers.appendChild(deleteBtn);
         deleteBtn.addEventListener("click", (e) => {
@@ -104,12 +99,14 @@ export const createDisplayManager = (TodoList) => {
         listItem.appendChild(detailsSection);
 
         // allow user to see description on click
-        icon.addEventListener("click", (e) => {
+        seeDetailsIcon.addEventListener("click", (e) => {
             if (detailsSection.style.display === "none") {
                 detailsSection.style.display = "flex";
+                seeDetailsIcon.src = doubleArrowUpIcon;
                 headingSection.classList.add("details-visible");
             } else {
                 detailsSection.style.display = "none";
+                seeDetailsIcon.src = doubleArrowDownIcon;
                 headingSection.classList.remove("details-visible");
             }
         });
