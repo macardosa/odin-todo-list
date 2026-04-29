@@ -7,6 +7,11 @@ export function createTodoList(listOfTodoItems) {
         const index = list.findIndex((todo) => todo.id === id);
         list.splice(index, 1); // delete element
     }
+    
+    function completeTask(id) {
+        const index = list.findIndex((todo) => todo.id === id);
+        list[index].complete();
+    }
 
     function comparePriority(a, b) {
         const order = { HIGH: 1, MEDIUM: 2, LOW: 3 };
@@ -14,8 +19,8 @@ export function createTodoList(listOfTodoItems) {
     }
 
     function getList() {
-        return list.sort(
-            (a, b) => {
+        return list.filter((task) => !task.completed)
+            .sort((a, b) => {
                 // sorts first according to due date
                 const dateDiff = compareAsc(a.dueDate, b.dueDate);
                 if (dateDiff !== 0) return dateDiff;
@@ -29,6 +34,7 @@ export function createTodoList(listOfTodoItems) {
 
     return {
         getList,
-        remove
+        remove,
+        completeTask
     }
 }

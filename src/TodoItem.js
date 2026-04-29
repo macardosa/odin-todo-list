@@ -17,5 +17,9 @@ export class TodoItem {
         let daysLeft = Math.floor((this.dueDate - now) / (1000 * 3600 * 24));
         return daysLeft;
     }
+
+    complete() {
+        this.complete = true;
+    }
 }
 

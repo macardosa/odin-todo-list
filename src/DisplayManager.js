@@ -8,6 +8,7 @@ export const createDisplayManager = (TodoList) => {
     const renderTodoItem = (todo) => {
         const listItem = document.createElement("div");
         listItem.classList.add("todo-item");
+        listItem.dataset.id = todo.id;
 
         // create heading 
         const headingSection = document.createElement("div");
@@ -38,38 +39,77 @@ export const createDisplayManager = (TodoList) => {
         dueDate.classList.add("due-date");
         headingSection.appendChild(dueDate);
 
+        // add style according to priority
+        headingSection.classList.add(`${todo.priority.toLowerCase()}-priority`);
+
         // add tick boxes to handle completion of todos
         const tickBox = document.createElement("div"); // used for clearing todo on completion
         tickBox.classList.add("todo-tick-box");
-        tickBox.dataset.id = todo.id;
         // logic to remove todo items from the DOM
         tickBox.addEventListener("click", (e) => {
             // remove todo from TodoList
-            TodoList.remove(tickBox.dataset.id);
+            TodoList.completeTask(listItem.dataset.id);
             // remove element from DOM
             tickBox.closest(".todo-item").remove();
         });
         headingSection.appendChild(tickBox);
 
-        // add style according to priority
-        headingSection.classList.add(`${todo.priority.toLowerCase()}-priority`);
-
         listItem.appendChild(headingSection);
 
-        // description section
-        const descriptionSection = document.createElement("p");
-        descriptionSection.textContent = todo.description;
-        descriptionSection.classList.add("todo-description");
-        descriptionSection.style.display = "none";
-        listItem.appendChild(descriptionSection);
+        // details section
+        const detailsSection = document.createElement("div");
+        detailsSection.classList.add("todo-details");
+        detailsSection.style.display = "none";
+
+        // add description
+        const description = document.createElement("div");
+        description.textContent = todo.description;
+        description.classList.add("todo-description");
+        detailsSection.appendChild(description);
+
+        // add cotrol buttons
+        const controllers = document.createElement("div");
+        controllers.classList.add("controllers");
+        // button to change priority
+        const priorityBtn = document.createElement("div");
+        priorityBtn.textContent = `Priority: ${todo.priority}`;
+        priorityBtn.classList.add("priority-btn", `${todo.priority.toLowerCase()}`);
+        priorityBtn.addEventListener("click", (e) => {
+            console.log("clicked priority btn", todo.title);
+        });
+        controllers.appendChild(priorityBtn);
+
+        // button to edit task
+        const editBtn = document.createElement("div");
+        editBtn.textContent = "Edit Task";
+        editBtn.classList.add("edit-btn", `${todo.priority.toLowerCase()}`);
+        controllers.appendChild(editBtn);
+        editBtn.addEventListener("click", (e) => {
+            console.log("clicked edit btn", todo.title);
+        });
+
+        // button to delete task
+        const deleteBtn = document.createElement("div");
+        deleteBtn.textContent = "Delete";
+        deleteBtn.classList.add("delete-btn", `${todo.priority.toLowerCase()}`);
+        controllers.appendChild(deleteBtn);
+        deleteBtn.addEventListener("click", (e) => {
+            // remove todo from TodoList
+            TodoList.remove(listItem.dataset.id);
+            // remove element from DOM
+            tickBox.closest(".todo-item").remove();
+        });
+
+        detailsSection.appendChild(controllers);
+        listItem.appendChild(detailsSection);
 
         // allow user to see description on click
         icon.addEventListener("click", (e) => {
-            if (descriptionSection.style.display === "none") {
-                descriptionSection.style.display = "block";
+            if (detailsSection.style.display === "none") {
+                detailsSection.style.display = "flex";
                 headingSection.classList.add("details-visible");
             } else {
-                descriptionSection.style.display = "none";
+                detailsSection.style.display = "none";
                 headingSection.classList.remove("details-visible");
             }
         });

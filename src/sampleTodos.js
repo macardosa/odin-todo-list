@@ -55,5 +55,16 @@ export const sampleTodos = [
         "2026-05-07",
         "MEDIUM",
         "Add unit tests for core business logic."
+    ),
+
+    new TodoItem(
+        "Set up tests",
+        "2026-05-07",
+        "MEDIUM",
+        `Add unit tests for core business logic. 
+    Make sure to cover edge cases such as invalid inputs, 
+    unexpected null values, and performance-critical paths. 
+    Include integration tests for async functions and API calls. 
+    Document each test scenario clearly in the test suite.`
     )
 ];

@@ -59,6 +59,7 @@ main {
 
 .todo-item {
     border: 2px solid black;
+    border-radius: 10px;
 }
 
 .todo-heading {
@@ -69,6 +70,7 @@ main {
     grid-template-rows: 1fr 1fr;
     align-items: end;
     position: relative;
+    border-radius: 8px;
 }
 
 .todo-tick-box {
@@ -89,12 +91,6 @@ main {
 .todo-tick-box:hover {
     cursor: pointer;
     transform: translateY(-50%) scale(1.1);
-}
-
-.todo-item,
-.todo-heading {
-    border-radius: 10px;
-    /* border-top-left-radius: 15px; */
 }
 
 .todo-heading.details-visible {
@@ -133,8 +129,36 @@ main {
     background-color: var(--high-priority-color);
 }
 
-.todo-description {
-    height: 100px;
-    overflow: scroll;
+.todo-details {
+    min-height: 100px;
     padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.todo-description {
+    /* overflow: scroll; */
+    padding-right: 10px;
+}
+
+.controllers {
+    display: flex;
+    justify-content: space-between;
+}
+
+.priority-btn,
+.edit-btn,
+.delete-btn {
+    color: black;
+    padding: 4px 8px;
+    border-radius: 20px;
+    border: 1px solid black;
+}
+
+.priority-btn:hover,
+.edit-btn:hover,
+.delete-btn:hover {
+    cursor: pointer;
 }
