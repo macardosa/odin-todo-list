@@ -4,6 +4,8 @@ export class TodoItem {
         this.description = description;
         this.dueDate = new Date(dueDate);
         this.priority = priority;
+        this.completed = false;
+        this.id = crypto.randomUUID();
     }
 
     toString() {

@@ -2,7 +2,7 @@ import { da } from "date-fns/locale";
 import { TodoItem } from "./TodoItem.js";
 import doubleArrowDownIcon from "./assets/icons/double-arrow-down.svg";
 
-export const displayManager = (function () {
+export const createDisplayManager = (TodoList) => {
     const main = document.querySelector("main");
 
     const renderTodoItem = (todo) => {
@@ -26,7 +26,8 @@ export const displayManager = (function () {
         const dueDate = document.createElement("div");
         const daysLeft = todo.timeLeft();
         if (daysLeft < 0) {
-            dueDate.textContent = "overdue";
+            dueDate.textContent = "Overdue";
+            title.style.textDecoration = "line-through";
         } else if (daysLeft === 0) {
             dueDate.textContent = "Due Today";
         } else if (daysLeft === 1) {
@@ -36,6 +37,19 @@ export const displayManager = (function () {
         }
         dueDate.classList.add("due-date");
         headingSection.appendChild(dueDate);
+
+        // add tick boxes to handle completion of todos
+        const tickBox = document.createElement("div"); // used for clearing todo on completion
+        tickBox.classList.add("todo-tick-box");
+        tickBox.dataset.id = todo.id;
+        // logic to remove todo items from the DOM
+        tickBox.addEventListener("click", (e) => {
+            // remove todo from TodoList
+            TodoList.remove(tickBox.dataset.id);
+            // remove element from DOM
+            tickBox.closest(".todo-item").remove();
+        });
+        headingSection.appendChild(tickBox);
 
         // add style according to priority
         headingSection.classList.add(`${todo.priority.toLowerCase()}-priority`);
@@ -63,8 +77,8 @@ export const displayManager = (function () {
         return listItem;
     }
 
-    const renderTodoList = (TodoList) => {
-        TodoList.forEach(todo => {
+    const renderTodoList = () => {
+        TodoList.getList().forEach(todo => {
             let listItem = renderTodoItem(todo);
             main.appendChild(listItem);
         });
@@ -73,4 +87,4 @@ export const displayManager = (function () {
     return {
         renderTodoList
     }
-})();
+};
