@@ -31,8 +31,8 @@ export function createTodoList(listOfTodoItems) {
         return order[a] - order[b];
     }
 
-    function getList() {
-        return list.filter((task) => !task.completed)
+    function getList(project) {
+        return list.filter((task) => !task.completed && task.project === project)
             .sort((a, b) => {
                 // sorts first according to due date
                 const dateDiff = compareAsc(a.dueDate, b.dueDate);
@@ -44,6 +44,8 @@ export function createTodoList(listOfTodoItems) {
             }
         );
     }
+
+
 
     return {
         getList,

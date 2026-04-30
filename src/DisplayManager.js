@@ -6,9 +6,11 @@ import editIcon from "./assets/icons/edit-icon.svg";
 import deleteIcon from "./assets/icons/delete-icon.svg";
 
 export const createDisplayManager = (TodoList) => {
-    const main = document.querySelector("main");
+    const todoListElement = document.querySelector(".todo-list");
     const overlay = document.querySelector(".overlay");
     const taskForm = document.querySelector(".task-form");
+    const projectsList = document.querySelector(".projects-list");
+    let activeProject = "default";
 
     const createTodoItem = (todo) => {
         const listItem = document.createElement("div");
@@ -118,7 +120,7 @@ export const createDisplayManager = (TodoList) => {
 
     const updateTodoItem = (todo) => {
         const modifiedListItem = createTodoItem(todo);
-        const currentListItem = Array.from(main.querySelectorAll(".todo-item"))
+        const currentListItem = Array.from(todoListElement.querySelectorAll(".todo-item"))
             .find(item => item.dataset.id === todo.id);
         currentListItem.replaceWith(modifiedListItem);
     }
@@ -147,11 +149,14 @@ export const createDisplayManager = (TodoList) => {
         overlay.style.display = "none";
     }
 
-    const renderTodoList = () => {
-        main.replaceChildren();
-        TodoList.getList().forEach(todo => {
+    const renderTodoList = (project) => {
+        activeProject = project;
+        const heading = document.querySelector(".main-heading");
+        heading.textContent = project;
+        todoListElement.replaceChildren();
+        TodoList.getList(project).forEach(todo => {
             let listItem = createTodoItem(todo);
-            main.appendChild(listItem);
+            todoListElement.appendChild(listItem);
         });
     };
 
@@ -165,9 +170,23 @@ export const createDisplayManager = (TodoList) => {
 
             const index = TodoList.updateTask(id, { title, dueDate, priority, description });
             updateTodoItem(TodoList.get(index));
-            renderTodoList();
+            renderTodoList(activeProject);
             hideInputTaskForm();
         });
+
+    function createProjectBtn(projectName) {
+        const projectItem = document.createElement("div");
+        projectItem.classList.add("project-item");
+        projectItem.textContent = projectName; 
+        projectsList.appendChild(projectItem);
+    }
+
+    projectsList.addEventListener("click", (e) => {
+        if (e.target.classList.contains("project-item")) {
+            const projectName = e.target.textContent;
+            renderTodoList(projectName);
+        }
+    });
 
     return {
         renderTodoList

@@ -31,7 +31,8 @@
 }
 
 :root {
-    --light-bg-color: rgb(237, 222, 237);
+    --main-bg-color: rgb(237, 222, 237);
+    --aside-bg-color: rgb(220, 200, 230);
     --low-priority-color: rgb(240, 240, 123);
     --medium-priority-color: rgb(243, 195, 106);
     --high-priority-color: rgb(230, 149, 149);
@@ -39,7 +40,10 @@
 
 body {
     font-family: "Open Sans", system-ui, sans-serif;
-    background-color: var(--light-bg-color);
+    background-color: var(--main-bg-color);
+    height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 5fr;
 }
 
 h1,
@@ -50,6 +54,55 @@ h4 {
 }
 
 main {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+}
+
+aside {
+    background-color: var(--aside-bg-color);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.projects-list {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.project-item {
+    font-size: 1.1rem;
+    text-decoration: underline;
+}
+
+.project-item:hover {
+    transform: scale(1.1);
+    cursor: pointer;
+}
+
+.add-project-btn {
+    width: 25px;
+}
+
+.add-todo-btn {
+    width: 60px;
+}
+
+.add-project-btn:hover,
+.add-todo-btn:hover {
+    transform: scale(1.1);
+    cursor: pointer;
+}
+
+.todo-list {
     grid-area: main;
     display: flex;
     flex-direction: column;
@@ -160,17 +213,8 @@ main {
 .edit-btn:hover,
 .delete-btn:hover {
     cursor: pointer;
+    transform: scale(1.1);
 }
-
-/* .task-form {
-    width: 400px;
-    height: 400px;
-    background-color: white;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-} */
 
 .overlay {
     display: none;

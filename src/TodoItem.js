@@ -1,13 +1,14 @@
 import { format, compareAsc } from "date-fns";
 
 export class TodoItem {
-    constructor(title, dueDate,  priority="LOW", description="") {
+    constructor(title, dueDate,  priority="LOW", description="", project="My ToDos") {
         this.title = title;
         this.description = description;
         this.dueDate = new Date(dueDate);
         this.priority = priority;
         this.completed = false;
         this.id = crypto.randomUUID();
+        this.project = project;
     }
 
     toString() {

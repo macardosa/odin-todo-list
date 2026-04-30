@@ -7,4 +7,4 @@ import { createTodoList } from "./TodoList.js";
 const todos = createTodoList(sampleTodos);
 const display = createDisplayManager(todos);
 
-display.renderTodoList();
+display.renderTodoList("My ToDos");
