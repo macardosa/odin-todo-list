@@ -7,8 +7,10 @@ import deleteIcon from "./assets/icons/delete-icon.svg";
 
 export const createDisplayManager = (TodoList) => {
     const main = document.querySelector("main");
+    const overlay = document.querySelector(".overlay");
+    const taskForm = document.querySelector(".task-form");
 
-    const renderTodoItem = (todo) => {
+    const createTodoItem = (todo) => {
         const listItem = document.createElement("div");
         listItem.classList.add("todo-item");
         listItem.dataset.id = todo.id;
@@ -80,7 +82,7 @@ export const createDisplayManager = (TodoList) => {
         editBtn.classList.add("edit-btn", `${todo.priority.toLowerCase()}`);
         controllers.appendChild(editBtn);
         editBtn.addEventListener("click", (e) => {
-            console.log("clicked edit btn", todo.title);
+            renderInputTaskForm(todo);
         });
 
         // button to delete task
@@ -114,12 +116,58 @@ export const createDisplayManager = (TodoList) => {
         return listItem;
     }
 
+    const updateTodoItem = (todo) => {
+        const modifiedListItem = createTodoItem(todo);
+        const currentListItem = Array.from(main.querySelectorAll(".todo-item"))
+            .find(item => item.dataset.id === todo.id);
+        currentListItem.replaceWith(modifiedListItem);
+    }
+
+    const renderInputTaskForm = (todo) => {
+        overlay.style.display = "block";
+        taskForm.style.display = "grid";
+        const taskFormBtn = taskForm.querySelector(".task-form-btn");
+        taskFormBtn.dataset.id = todo.id;
+
+        const title = taskForm.querySelector("[name=task-form-title]");
+        title.value = todo.title;
+
+        const dueDate = taskForm.querySelector("[name=task-form-due-date]");
+        dueDate.value = todo.dueDateString();
+
+        const priority = taskForm.querySelector("[name=task-form-priority]");
+        priority.value = todo.priority;
+
+        const description = taskForm.querySelector("[name=task-form-description]");
+        description.value = todo.description;
+    }
+
+    const hideInputTaskForm = () => {
+        taskForm.style.display = "none";
+        overlay.style.display = "none";
+    }
+
     const renderTodoList = () => {
+        main.replaceChildren();
         TodoList.getList().forEach(todo => {
-            let listItem = renderTodoItem(todo);
+            let listItem = createTodoItem(todo);
             main.appendChild(listItem);
         });
     };
+
+    taskForm.querySelector(".task-form-btn")
+        .addEventListener("click", (e) => {
+            const title = taskForm.querySelector("[name=task-form-title]").value;
+            const dueDate = taskForm.querySelector("[name=task-form-due-date]").value;
+            const priority = taskForm.querySelector("[name=task-form-priority]").value;
+            const description = taskForm.querySelector("[name=task-form-description]").value;
+            const id = e.target.dataset.id;
+
+            const index = TodoList.updateTask(id, { title, dueDate, priority, description });
+            updateTodoItem(TodoList.get(index));
+            renderTodoList();
+            hideInputTaskForm();
+        });
 
     return {
         renderTodoList

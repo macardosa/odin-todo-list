@@ -1,14 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ToDo app</title>
 </head>
-<body>
-    <main>
-        
-    </main>
 
+<body>
+    <main></main>
+    <div class="overlay"></div>
+    <div class="task-form">
+        <label class="task-form-title">
+            Title
+            <input name="task-form-title" type="text" autofocus autocomplete="off">
+        </label>
+
+        <label class="task-form-due-date">
+            Due Date
+            <input name="task-form-due-date" type="date">
+        </label>
+
+        <label class="task-form-priority">
+            Priority
+            <select name="task-form-priority">
+                <option value="LOW">LOW</option>
+                <option value="MEDIUM">MEDIUM</option>
+                <option value="HIGH">HIGH</option>
+            </select>
+        </label>
+
+        <label class="task-form-description">
+            Description
+            <textarea name="task-form-description" id="task-form-description">
+            </textarea>
+        </label>
+
+        <button class="task-form-btn" type="submit">Add Task</button>
+    </div>
 </body>
+
 </html>

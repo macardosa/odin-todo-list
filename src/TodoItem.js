@@ -1,5 +1,7 @@
+import { format, compareAsc } from "date-fns";
+
 export class TodoItem {
-    constructor(title, dueDate = "today",  priority="LOW", description="") {
+    constructor(title, dueDate,  priority="LOW", description="") {
         this.title = title;
         this.description = description;
         this.dueDate = new Date(dueDate);
@@ -20,6 +22,17 @@ export class TodoItem {
 
     complete() {
         this.complete = true;
+    }
+
+    update(data) {
+        this.title = data.title;
+        this.dueDate = new Date(data.dueDate);
+        this.priority = data.priority;
+        this.description = data.description;
+    }
+
+    dueDateString() {
+        return format(this.dueDate, "yyyy-MM-dd");
     }
 }
 

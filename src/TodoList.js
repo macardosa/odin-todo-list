@@ -3,6 +3,13 @@ import { format, compareAsc } from "date-fns";
 export function createTodoList(listOfTodoItems) {
     const list = listOfTodoItems || [];
 
+    function get(index) {
+        if (index >= list.length || index < 0) {
+            throw Error("Invalid index accessing TodoList.get()");
+        }
+        return list[index];
+    }
+
     function remove(id) {
         const index = list.findIndex((todo) => todo.id === id);
         list.splice(index, 1); // delete element
@@ -11,6 +18,12 @@ export function createTodoList(listOfTodoItems) {
     function completeTask(id) {
         const index = list.findIndex((todo) => todo.id === id);
         list[index].complete();
+    }
+
+    function updateTask(id, data) {
+        const index = list.findIndex((todo) => todo.id === id);
+        list[index].update(data);
+        return index;
     }
 
     function comparePriority(a, b) {
@@ -25,7 +38,7 @@ export function createTodoList(listOfTodoItems) {
                 const dateDiff = compareAsc(a.dueDate, b.dueDate);
                 if (dateDiff !== 0) return dateDiff;
 
-                // for elements of equal due date sort them based on priority
+                // for elements of equal due date: sort them based on priority
                 const priorityDiff = comparePriority(a.priority, b.priority)
                 return priorityDiff;
             }
@@ -35,6 +48,8 @@ export function createTodoList(listOfTodoItems) {
     return {
         getList,
         remove,
-        completeTask
+        completeTask,
+        updateTask,
+        get
     }
 }
