@@ -4,7 +4,6 @@ import doubleArrowDownIcon from "./assets/icons/double-arrow-down-icon.svg";
 import doubleArrowUpIcon from "./assets/icons/double-arrow-up-icon.svg";
 import editIcon from "./assets/icons/edit-icon.svg";
 import deleteIcon from "./assets/icons/delete-icon.svg";
-import trashBinOpen from "./assets/icons/trash-bin-open.svg";
 
 export const createDisplayManager = (TodoList) => {
     const todoListElement = document.querySelector(".todo-list");
@@ -200,6 +199,11 @@ export const createDisplayManager = (TodoList) => {
             }
 
             renderTodoList(activeProject);
+            clearInputTaskForm();
+        });
+
+    taskForm.querySelector(".close-form-btn")
+        .addEventListener("click", (e) => {
             clearInputTaskForm();
         });
 
