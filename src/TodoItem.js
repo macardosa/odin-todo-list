@@ -6,9 +6,9 @@ export class TodoItem {
         this.description = (description === undefined) ? "" : description;
         this.dueDate = new Date(dueDate);
         this.priority = (priority === undefined) ? "LOW" : priority;
-        this.completed = false;
+        this._completed = false;
         this.id = crypto.randomUUID();
-        this.projects = (project === undefined || project === "My ToDos") ? ["My ToDos"] : ["My ToDos", project];
+        this._projects = (project === undefined || project === "My ToDos") ? ["My ToDos"] : ["My ToDos", project];
     }
 
     toString() {
@@ -22,9 +22,13 @@ export class TodoItem {
     }
 
     complete() {
-        this.completed = true;
+        this._completed = true;
     }
 
+    get completed() {
+        return this._completed;
+    }
+    
     update(data) {
         this.title = data.title;
         this.dueDate = new Date(data.dueDate);
@@ -34,6 +38,10 @@ export class TodoItem {
 
     dueDateString() {
         return format(this.dueDate, "yyyy-MM-dd");
+    }
+
+    get projects() {
+        return this._projects;
     }
 
     get project() {

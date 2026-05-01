@@ -56,14 +56,17 @@ export function createTodoList(listOfTodoItems) {
     function getListOfProjects() {
         return list.reduce((projects, todoItem) => {
             todoItem.projects.forEach(project => {
-                if (!(project in projects)) {
-                    projects[project] = 1;
-                } else {
+                if (!projects[project]) {
+                    projects[project] = 0;
+                }
+                
+                if (!todoItem.completed) {
                     projects[project]++;
                 }
             });
+
             return projects;
-        }, {})
+        }, {});
     }
 
     return {

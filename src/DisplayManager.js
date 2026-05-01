@@ -232,6 +232,7 @@ export const createDisplayManager = (TodoList) => {
             const projectCountElement = projectsListElement.querySelector(`[data-project="${projectName}"] .project-count`);
             projectCountElement.textContent = projectCount;
         });
+        console.log(projects);
     }
 
     // logic to remove todo items when task is marked as completed
