@@ -61,7 +61,6 @@ main {
     align-items: center;
     gap: 10px;
     padding: 10px;
-    border: 1px solid black;
 }
 
 aside {
@@ -86,8 +85,30 @@ aside {
 }
 
 .project-item.completed {
-    order: 999;
+    order: 998;
     margin-top: 20px;
+}
+
+.trash-area {
+    order: 999;
+    height: 100px;
+    width: 80%;
+    background-color: red;
+    color: white;
+    font-style: italic;
+    font-family: "Charter", serif;
+    padding: 20px;
+    text-align: center;
+    border-radius: 12px;
+    margin: 20px auto;
+
+    pointer-events: auto;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.trash-area.active {
+    opacity: 1;
 }
 
 .project-count {

@@ -85,6 +85,10 @@ export function createTodoList(listOfTodoItems) {
         }, { "Completed": 0 });
     }
 
+    function removeProject(projectToDelete) {
+        list.forEach(item => item.removeProject(projectToDelete));
+    }
+
     return {
         getList,
         getListOfProjects,
@@ -94,6 +98,7 @@ export function createTodoList(listOfTodoItems) {
         get,
         addTask,
         findTaskById,
-        getCompletedList
+        getCompletedList,
+        removeProject
     }
 }

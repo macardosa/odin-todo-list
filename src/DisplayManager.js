@@ -4,6 +4,7 @@ import doubleArrowDownIcon from "./assets/icons/double-arrow-down-icon.svg";
 import doubleArrowUpIcon from "./assets/icons/double-arrow-up-icon.svg";
 import editIcon from "./assets/icons/edit-icon.svg";
 import deleteIcon from "./assets/icons/delete-icon.svg";
+import trashBinOpen from "./assets/icons/trash-bin-open.svg";
 
 export const createDisplayManager = (TodoList) => {
     const todoListElement = document.querySelector(".todo-list");
@@ -11,6 +12,7 @@ export const createDisplayManager = (TodoList) => {
     const taskForm = document.querySelector(".task-form");
     const projectsListElement = document.querySelector(".projects-list");
     let activeProject = "My ToDos";
+    const projectsTrash = projectsListElement.querySelector(".trash-area");
 
     const createTodoItem = (todo) => {
         const listItem = document.createElement("div");
@@ -205,6 +207,7 @@ export const createDisplayManager = (TodoList) => {
         const projectItem = document.createElement("div");
         projectItem.classList.add("project-item");
         projectItem.dataset.project = projectNameText;
+        projectItem.draggable = "true";
 
         const projectName = document.createElement("div");
         projectName.textContent = projectNameText;
@@ -217,7 +220,38 @@ export const createDisplayManager = (TodoList) => {
         projectItem.appendChild(projectName);
         projectItem.appendChild(projectCount);
 
+        // functionality to delete project by dragging to trash bin
+        projectItem.addEventListener("dragstart", (e) => {
+            projectsTrash.classList.add("active");
+            e.dataTransfer.setData("text/plain", projectNameText);
+        });
+
         return projectItem;
+    }
+
+    // functionality to capture drop of dragged project
+    document.addEventListener("dragover", (e) => {
+        e.preventDefault(); // to allow drop
+    });
+
+    projectsTrash.addEventListener("drop", (e) => {
+        e.stopPropagation(); // prevent document handler
+        projectsTrash.classList.remove("active");
+
+        const draggedProjectName = e.dataTransfer.getData("text/plain");
+        removeProject(draggedProjectName)
+    });
+
+    document.addEventListener("drop", (e) => {
+        projectsTrash.classList.remove("active");
+    });
+
+
+    function removeProject(projectName) {
+        TodoList.removeProject(projectName);
+        const projectItem = projectsListElement
+            .querySelector(`[data-project=${projectName}]`);
+        projectItem.remove();
     }
 
     projectsListElement.addEventListener("click", (e) => {
@@ -296,6 +330,7 @@ export const createDisplayManager = (TodoList) => {
         });
 
     return {
-        renderTodoList
+        renderTodoList,
+        createProjectField
     }
 };

@@ -8,12 +8,17 @@ export class TodoItem {
         this.priority = (priority === undefined) ? "LOW" : priority;
         this._completed = false;
         this.id = crypto.randomUUID();
-        this._projects = (project === undefined || project === "My ToDos") ? ["My ToDos"] : ["My ToDos", project];
+        this._defaultProject = "My ToDos";
+        this._projects = (project === undefined || project === this._defaultProject) ? [this._defaultProject] : [this._defaultProject, project];
         this.completionDate = null;
     }
 
     toString() {
         return `${this.title} - ${this.priority} - Due ${this.dueDate}\n${this.description}`;
+    }
+
+    get defaultProject() {
+        return this._defaultProject;
     }
 
     timeLeft() {
@@ -48,6 +53,14 @@ export class TodoItem {
 
     get projects() {
         return this._projects;
+    }
+
+    removeProject(projectToDelete) {
+        if (this.defaultProject.toLowerCase() === projectToDelete.toLowerCase()) {
+            // not allowed to delete default project
+            return;
+        }
+        this._projects = this._projects.filter(project => project !== projectToDelete);
     }
 
     get project() {
