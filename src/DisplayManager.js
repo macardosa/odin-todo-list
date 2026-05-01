@@ -10,7 +10,7 @@ export const createDisplayManager = (TodoList) => {
     const overlay = document.querySelector(".overlay");
     const taskForm = document.querySelector(".task-form");
     const projectsListElement = document.querySelector(".projects-list");
-    let activeProject = "default";
+    let activeProject = "My ToDos";
 
     const createTodoItem = (todo) => {
         const listItem = document.createElement("div");
@@ -35,7 +35,7 @@ export const createDisplayManager = (TodoList) => {
         const daysLeft = todo.timeLeft();
         if (daysLeft < 0) {
             dueDate.textContent = "Overdue";
-            title.style.textDecoration = "line-through";
+            listItem.classList.add("overdue");
         } else if (daysLeft === 0) {
             dueDate.textContent = "Due Today";
         } else if (daysLeft === 1) {
@@ -146,15 +146,31 @@ export const createDisplayManager = (TodoList) => {
     }
 
     const renderTodoList = (project) => {
-        activeProject = project;
         const heading = document.querySelector(".main-heading");
-        heading.textContent = activeProject;
+        heading.textContent = project;
         todoListElement.replaceChildren();
-        const listOfTodoItems = TodoList.getList(project);
-        listOfTodoItems.forEach(todo => {
-            let listItem = createTodoItem(todo);
-            todoListElement.appendChild(listItem);
-        });
+
+        if (project === "Completed") {
+            const listOfTodoItems = TodoList.getCompletedList();
+            document.querySelector(".add-todo-btn").style.display = "none";
+            listOfTodoItems.forEach(todo => {
+                let listItem = createTodoItem(todo);
+                listItem.querySelector(".todo-tick-box").style.display = "none";
+                listItem.classList.remove("overdue"); // in case exists
+                listItem.classList.add("completed");
+                listItem.querySelector(".due-date").textContent = `${todo.completionDateString()}`;
+                todoListElement.appendChild(listItem);
+            });
+        } else {
+            const listOfTodoItems = TodoList.getList(project);
+            document.querySelector(".add-todo-btn").style.display = "block";
+            activeProject = project;
+            listOfTodoItems.forEach(todo => {
+                let listItem = createTodoItem(todo);
+                todoListElement.appendChild(listItem);
+            });
+        }
+
         updateProjectCounts();
     };
 

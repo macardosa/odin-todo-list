@@ -50,7 +50,21 @@ export function createTodoList(listOfTodoItems) {
                 const priorityDiff = comparePriority(a.priority, b.priority)
                 return priorityDiff;
             }
-        );
+            );
+    }
+
+    function getCompletedList() {
+        return list.filter((task) => task.completed)
+            .sort((a, b) => {
+                // sorts first according to due date
+                const dateDiff = compareAsc(a.dueDate, b.dueDate);
+                if (dateDiff !== 0) return dateDiff;
+
+                // for elements of equal due date: sort them based on priority
+                const priorityDiff = comparePriority(a.priority, b.priority)
+                return priorityDiff;
+            }
+            );
     }
 
     function getListOfProjects() {
@@ -59,14 +73,16 @@ export function createTodoList(listOfTodoItems) {
                 if (!projects[project]) {
                     projects[project] = 0;
                 }
-                
+
                 if (!todoItem.completed) {
                     projects[project]++;
+                } else {
+                    projects.Completed++;
                 }
             });
 
             return projects;
-        }, {});
+        }, { "Completed": 0 });
     }
 
     return {
@@ -77,6 +93,7 @@ export function createTodoList(listOfTodoItems) {
         updateTask,
         get,
         addTask,
-        findTaskById
+        findTaskById,
+        getCompletedList
     }
 }

@@ -9,6 +9,7 @@ export class TodoItem {
         this._completed = false;
         this.id = crypto.randomUUID();
         this._projects = (project === undefined || project === "My ToDos") ? ["My ToDos"] : ["My ToDos", project];
+        this.completionDate = null;
     }
 
     toString() {
@@ -23,12 +24,13 @@ export class TodoItem {
 
     complete() {
         this._completed = true;
+        this.completionDate = new Date();
     }
 
     get completed() {
         return this._completed;
     }
-    
+
     update(data) {
         this.title = data.title;
         this.dueDate = new Date(data.dueDate);
@@ -40,12 +42,16 @@ export class TodoItem {
         return format(this.dueDate, "yyyy-MM-dd");
     }
 
+    completionDateString() {
+        return format(this.completionDate, "yyyy-MM-dd HH:mm");
+    }
+
     get projects() {
         return this._projects;
     }
 
     get project() {
-        return this.projects.length 
+        return this.projects.length
             ? this.projects.at(-1)
             : "My ToDos";
     }
