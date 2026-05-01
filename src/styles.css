@@ -61,6 +61,7 @@ main {
     align-items: center;
     gap: 10px;
     padding: 10px;
+    border: 1px solid black;
 }
 
 aside {
@@ -143,11 +144,12 @@ aside {
 
 .todo-list {
     grid-area: main;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 100px;
     padding: 30px;
-    position: relative;
+    width: 100%;
+    align-items: start;
 }
 
 .todo-item {
