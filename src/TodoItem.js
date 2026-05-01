@@ -1,14 +1,14 @@
 import { format, compareAsc } from "date-fns";
 
 export class TodoItem {
-    constructor(title, dueDate,  priority="LOW", description="", project="My ToDos") {
+    constructor(title, dueDate, priority, description, project) {
         this.title = title;
-        this.description = description;
+        this.description = (description === undefined) ? "" : description;
         this.dueDate = new Date(dueDate);
-        this.priority = priority;
+        this.priority = (priority === undefined) ? "LOW" : priority;
         this.completed = false;
         this.id = crypto.randomUUID();
-        this.project = project;
+        this.projects = (project === undefined || project === "My ToDos") ? ["My ToDos"] : ["My ToDos", project];
     }
 
     toString() {
@@ -22,7 +22,7 @@ export class TodoItem {
     }
 
     complete() {
-        this.complete = true;
+        this.completed = true;
     }
 
     update(data) {
@@ -34,6 +34,12 @@ export class TodoItem {
 
     dueDateString() {
         return format(this.dueDate, "yyyy-MM-dd");
+    }
+
+    get project() {
+        return this.projects.length 
+            ? this.projects.at(-1)
+            : "My ToDos";
     }
 }
 

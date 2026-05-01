@@ -43,7 +43,7 @@ body {
     background-color: var(--main-bg-color);
     height: 100vh;
     display: grid;
-    grid-template-columns: 1fr 5fr;
+    grid-template-columns: 1fr 4fr;
 }
 
 h1,
@@ -72,20 +72,52 @@ aside {
 }
 
 .projects-list {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    display: grid;
     gap: 20px;
 }
 
 .project-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+}
+
+.project-count {
+    font-size: 1.3rem;
+}
+
+.project-name {
     font-size: 1.1rem;
     text-decoration: underline;
 }
 
-.project-item:hover {
+.project-name:hover {
     transform: scale(1.1);
     cursor: pointer;
+}
+
+.new-project-input {
+    padding: 5px;
+    border-radius: 5px;
+    border: none;
+}
+
+.new-project-btn {
+    background-color: #f0f0f0;;
+    padding: 5px;
+    color: purple;
+    border-radius: 5px;
+    align-self: center;
+    border: none;
+}
+
+.new-project-btn:hover {
+    cursor: pointer;
+}
+
+.new-project-input:focus {
+    outline: none;
 }
 
 .add-project-btn {

@@ -8,3 +8,4 @@ const todos = createTodoList(sampleTodos);
 const display = createDisplayManager(todos);
 
 display.renderTodoList("My ToDos");
+console.log(todos.getListOfProjects());

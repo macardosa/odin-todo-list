@@ -10,11 +10,19 @@ export function createTodoList(listOfTodoItems) {
         return list[index];
     }
 
-    function remove(id) {
+    function addTask(todo) {
+        list.push(todo);
+    }
+
+    function findTaskById(id) {
+        return list.find(task => String(task.id) === String(id));
+    }
+
+    function removeTask(id) {
         const index = list.findIndex((todo) => todo.id === id);
         list.splice(index, 1); // delete element
     }
-    
+
     function completeTask(id) {
         const index = list.findIndex((todo) => todo.id === id);
         list[index].complete();
@@ -32,7 +40,7 @@ export function createTodoList(listOfTodoItems) {
     }
 
     function getList(project) {
-        return list.filter((task) => !task.completed && task.project === project)
+        return list.filter((task) => !task.completed && task.projects.includes(project))
             .sort((a, b) => {
                 // sorts first according to due date
                 const dateDiff = compareAsc(a.dueDate, b.dueDate);
@@ -45,13 +53,27 @@ export function createTodoList(listOfTodoItems) {
         );
     }
 
-
+    function getListOfProjects() {
+        return list.reduce((projects, todoItem) => {
+            todoItem.projects.forEach(project => {
+                if (!(project in projects)) {
+                    projects[project] = 1;
+                } else {
+                    projects[project]++;
+                }
+            });
+            return projects;
+        }, {})
+    }
 
     return {
         getList,
-        remove,
+        getListOfProjects,
+        removeTask,
         completeTask,
         updateTask,
-        get
+        get,
+        addTask,
+        findTaskById
     }
 }

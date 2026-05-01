@@ -12,10 +12,15 @@
         <h2>Projects</h2>
         <img src="./assets/icons/add-icon.svg" alt="Button to create new todo" class="add-project-btn">
         <div class="projects-list">
-            <div class="project-item">My ToDos</div>
-            <div class="project-item">Work</div>
-            <div class="project-item">Home</div>
-            <!-- <div class="project-item">School</div> -->
+            <div class="project-item" data-project="My ToDos">
+                <div class="project-name">My ToDos</div>
+                <div class="project-count">5</div>
+            </div>
+
+            <div class="project-item" data-project="Work">
+                <div class="project-name">Work</div>
+                <div class="project-count">0</div>
+            </div>
         </div>
     </aside>
     <main>
@@ -24,15 +29,15 @@
         <div class="todo-list"></div>
     </main>
     <div class="overlay"></div>
-    <div class="task-form">
+    <form class="task-form">
         <label class="task-form-title">
             Title
-            <input name="task-form-title" type="text" autofocus autocomplete="off">
+            <input name="task-form-title" type="text" autofocus autocomplete="off" required>
         </label>
 
         <label class="task-form-due-date">
             Due Date
-            <input name="task-form-due-date" type="date">
+            <input name="task-form-due-date" type="date" required>
         </label>
 
         <label class="task-form-priority">
@@ -51,7 +56,7 @@
         </label>
 
         <button class="task-form-btn" type="submit">Add Task</button>
-    </div>
+    </form>
 </body>
 
 </html>
