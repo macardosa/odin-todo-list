@@ -5,12 +5,11 @@ import doubleArrowUpIcon from "./assets/icons/double-arrow-up-icon.svg";
 import editIcon from "./assets/icons/edit-icon.svg";
 import deleteIcon from "./assets/icons/delete-icon.svg";
 
-export const createDisplayManager = (TodoList, projects) => {
+export const createDisplayManager = (TodoList, projects, activeProject) => {
     const todoListElement = document.querySelector(".todo-list");
     const overlay = document.querySelector(".overlay");
     const taskForm = document.querySelector(".task-form");
     const projectsListElement = document.querySelector(".projects-list");
-    let activeProject = "My ToDos";
     const projectsTrash = projectsListElement.querySelector(".trash-area");
 
     const createTodoItem = (todo) => {

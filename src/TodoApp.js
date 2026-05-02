@@ -7,13 +7,14 @@ export class TodoApp {
         this.todoList = (todoItemsArray)
             ? createTodoList(todoItemsArray)
             : createTodoList();
-        this.projects = [];
-        this.DOM = createDisplayManager(this.todoList, this.projects);
+        this.projects = ["My ToDos"];
+        this.activeProject = "My ToDos";
+        this.DOM = createDisplayManager(this.todoList, this.projects, this.activeProject);
     }
 
     run() {
         // test
-        this.DOM.renderTodoList("My ToDos");
+        this.DOM.renderTodoList(this.activeProject);
 
         this.projects.push("Work");
         const projectItem1 =  this.DOM.createProjectField("Work");
