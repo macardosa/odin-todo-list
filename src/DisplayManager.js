@@ -304,8 +304,8 @@ export const createDisplayManager = (TodoList, projects) => {
             const projectName = input.value;
             if (projectName !== "" && !projects.includes(projectName)) {
                 // remove the input and button fields to add new project
-                projectsListElement.lastElementChild.remove();
-                projectsListElement.lastElementChild.remove();
+                projectsListElement.querySelector(".new-project-input").remove();
+                projectsListElement.querySelector(".new-project-btn").remove();
 
                 // append the new project item
                 projects.push(projectName);
