@@ -45,6 +45,7 @@ body {
     height: 100vh;
     display: grid;
     grid-template-columns: 1fr 4fr;
+    overflow: hidden; /* important for sticking the aside */
 }
 
 h1,
@@ -61,6 +62,7 @@ main {
     align-items: center;
     gap: 10px;
     padding: 10px;
+    overflow-y: auto; /* main can scroll but not aside */
 }
 
 aside {
