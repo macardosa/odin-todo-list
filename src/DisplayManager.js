@@ -12,6 +12,11 @@ export const createDisplayManager = (TodoList, projects, activeProject) => {
     const projectsListElement = document.querySelector(".projects-list");
     const projectsTrash = projectsListElement.querySelector(".trash-area");
 
+    function notifyChange() {
+        const event = new CustomEvent("todoChange");
+        document.dispatchEvent(event);
+    }
+
     const createTodoItem = (todo) => {
         const listItem = document.createElement("div");
         listItem.classList.add("todo-item");
@@ -175,9 +180,8 @@ export const createDisplayManager = (TodoList, projects, activeProject) => {
                 todoListElement.appendChild(listItem);
             });
         } else {
-            const listOfTodoItems = TodoList.getList(project);
+            const listOfTodoItems = TodoList.getListForProject(project);
             document.querySelector(".add-todo-btn").style.display = "block";
-            activeProject = project;
             listOfTodoItems.forEach(todo => {
                 let listItem = createTodoItem(todo);
                 todoListElement.appendChild(listItem);
@@ -185,10 +189,12 @@ export const createDisplayManager = (TodoList, projects, activeProject) => {
         }
 
         updateProjectCounts();
+        activeProject.set(project);
+        notifyChange();
     };
 
     taskForm.querySelector(".task-form-btn")
-        .addEventListener("click", (e) => {
+        .addEventListener("submit", (e) => {
             e.preventDefault(); // prevent submitting the form
 
             const title = taskForm.querySelector("[name=task-form-title]").value;
@@ -204,13 +210,14 @@ export const createDisplayManager = (TodoList, projects, activeProject) => {
             if (e.target.classList.contains("update-task")) {
                 const id = e.target.dataset.id;
                 const index = TodoList.updateTask(id, { title, dueDate, priority, description });
-                updateTodoItem(TodoList.get(index));
+                updateTodoItem(TodoList.getTask(index));
                 e.target.classList.remove("update-task");
             } else {
-                TodoList.addTask(new TodoItem(title, dueDate, priority, description, activeProject));
+                TodoList.addTask(new TodoItem(title, dueDate, priority, description, activeProject.get()));
             }
 
-            renderTodoList(activeProject);
+            notifyChange();
+            renderTodoList(activeProject.get());
             clearInputTaskForm();
         });
 
@@ -254,7 +261,8 @@ export const createDisplayManager = (TodoList, projects, activeProject) => {
             const todoId = e.dataTransfer.getData("todo-id");
             TodoList.setProject(todoId, projectNameText);
             updateProjectCounts();
-            renderTodoList(activeProject);
+            renderTodoList(activeProject.get());
+            notifyChange();
         });
 
         return projectItem;
@@ -271,6 +279,7 @@ export const createDisplayManager = (TodoList, projects, activeProject) => {
 
         const draggedProjectName = e.dataTransfer.getData("project");
         removeProject(draggedProjectName);
+        notifyChange();
     });
 
     document.addEventListener("drop", (e) => {
@@ -289,6 +298,13 @@ export const createDisplayManager = (TodoList, projects, activeProject) => {
         const index = projects.indexOf(projectName);
         if (index !== -1) {
             projects.splice(index, 1);
+        }
+    }
+
+    function renderProjectsList() {
+        for (const project of projects) {
+            const projectItem = createProjectField(project);
+            projectsListElement.appendChild(projectItem);
         }
     }
 
@@ -311,6 +327,7 @@ export const createDisplayManager = (TodoList, projects, activeProject) => {
                 const projectItem = createProjectField(projectName);
                 projectsListElement.appendChild(projectItem);
             }
+            notifyChange();
             return;
         }
     });
@@ -338,6 +355,8 @@ export const createDisplayManager = (TodoList, projects, activeProject) => {
             listItem.remove();
             // update project counts
             updateProjectCounts();
+            // notify about this change 
+            notifyChange();
         } else if (e.target.classList.contains("delete-btn")) {
             const listItem = e.target.closest(".todo-item");
             // remove todo from TodoList
@@ -346,6 +365,7 @@ export const createDisplayManager = (TodoList, projects, activeProject) => {
             listItem.remove();
             // update project counts
             updateProjectCounts();
+            notifyChange();
         } else if (e.target.classList.contains("edit-btn")) {
             renderInputTaskForm();
             updateInputTaskForm(e.target.dataset.id);
@@ -374,6 +394,6 @@ export const createDisplayManager = (TodoList, projects, activeProject) => {
 
     return {
         renderTodoList,
-        createProjectField
+        renderProjectsList
     }
 };

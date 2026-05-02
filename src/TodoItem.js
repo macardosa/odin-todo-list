@@ -9,8 +9,26 @@ export class TodoItem {
         this._completed = false;
         this.id = crypto.randomUUID();
         this._defaultProject = "My ToDos";
-        this._projects = (project === undefined || project === this._defaultProject) ? [this._defaultProject] : [this._defaultProject, project];
+        this.userProject = (project && project !== this._defaultProject)
+            ? project 
+            : null;
         this.completionDate = null;
+    }
+
+    static fromJSON(obj) {
+        const item = new TodoItem(
+            obj.title,
+            obj.dueDate,
+            obj.priority,
+            obj.description,
+            obj.userProject
+        );
+
+        item.id = obj.id;
+        item._completed = obj._completed;
+        item.completionDate = obj.completionDate;
+
+        return item;
     }
 
     toString() {
@@ -52,33 +70,27 @@ export class TodoItem {
     }
 
     get projects() {
-        return this._projects;
+        return (this.userProject === null)
+            ? [this._defaultProject]
+            : [this._defaultProject, this.userProject];
     }
 
     removeProject(projectToDelete) {
-        if (this.defaultProject.toLowerCase() === projectToDelete.toLowerCase()) {
-            // not allowed to delete default project
-            return;
+        if (this.userProject === projectToDelete) {
+            this.userProject = null;
         }
-        this._projects = this._projects.filter(project => project !== projectToDelete);
     }
 
     get project() {
-        return this.projects.length
-            ? this.projects.at(-1)
-            : "My ToDos";
+        return (this.userProject)
+            ? this.userProject
+            : this._defaultProjectProject;
     }
 
     set project(projectName) {
         // ensure default always exists
-        if (this._projects.length === 0) {
-            this._projects.push(this._defaultProject);
-        }
-
-        if (this._projects.length > 1) {
-            this._projects[1] = projectName;
-        } else {
-            this._projects.push(projectName);
+        if (projectName !== this._defaultProject) {
+            this.userProject = projectName;
         }
     }
 }

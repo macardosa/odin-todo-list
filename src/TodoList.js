@@ -3,9 +3,9 @@ import { format, compareAsc } from "date-fns";
 export function createTodoList(listOfTodoItems) {
     const list = listOfTodoItems || []; 
 
-    function get(index) {
+    function getTask(index) {
         if (index >= list.length || index < 0) {
-            throw Error("Invalid index accessing TodoList.get()");
+            throw Error("Invalid index accessing TodoList.getTask()");
         }
         return list[index];
     }
@@ -44,7 +44,11 @@ export function createTodoList(listOfTodoItems) {
         return order[a] - order[b];
     }
 
-    function getList(project) {
+    function getList() {
+        return list;
+    }
+
+    function getListForProject(project) {
         return list.filter((task) => !task.completed && task.projects.includes(project))
             .sort((a, b) => {
                 // sorts first according to due date
@@ -98,11 +102,12 @@ export function createTodoList(listOfTodoItems) {
 
     return {
         getList,
+        getListForProject,
         countProjects,
         removeTask,
         completeTask,
         updateTask,
-        get,
+        getTask,
         addTask,
         findTaskById,
         getCompletedList,
