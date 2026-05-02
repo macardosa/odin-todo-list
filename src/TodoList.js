@@ -1,7 +1,7 @@
 import { format, compareAsc } from "date-fns";
 
 export function createTodoList(listOfTodoItems) {
-    const list = listOfTodoItems || [];
+    const list = listOfTodoItems || []; 
 
     function get(index) {
         if (index >= list.length || index < 0) {
@@ -26,6 +26,11 @@ export function createTodoList(listOfTodoItems) {
     function completeTask(id) {
         const index = list.findIndex((todo) => todo.id === id);
         list[index].complete();
+    }
+
+    function setProject(id, project) {
+        const index = list.findIndex((todo) => todo.id === id);
+        list[index].project = project;
     }
 
     function updateTask(id, data) {
@@ -67,21 +72,23 @@ export function createTodoList(listOfTodoItems) {
             );
     }
 
-    function getListOfProjects() {
-        return list.reduce((projects, todoItem) => {
+    function countProjects(projectsList) {
+        return list.reduce((projectCounts, todoItem) => {
+            if (todoItem.completed) {
+                projectCounts.Completed++;
+            }
+
             todoItem.projects.forEach(project => {
-                if (!projects[project]) {
-                    projects[project] = 0;
+                if (!projectCounts[project]) {
+                    projectCounts[project] = 0;
                 }
 
                 if (!todoItem.completed) {
-                    projects[project]++;
-                } else {
-                    projects.Completed++;
-                }
+                    projectCounts[project]++;
+                }     
             });
 
-            return projects;
+            return projectCounts;
         }, { "Completed": 0 });
     }
 
@@ -91,7 +98,7 @@ export function createTodoList(listOfTodoItems) {
 
     return {
         getList,
-        getListOfProjects,
+        countProjects,
         removeTask,
         completeTask,
         updateTask,
@@ -99,6 +106,7 @@ export function createTodoList(listOfTodoItems) {
         addTask,
         findTaskById,
         getCompletedList,
-        removeProject
+        removeProject,
+        setProject
     }
 }

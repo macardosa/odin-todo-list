@@ -82,11 +82,16 @@ aside {
     align-items: center;
     justify-content: space-between;
     gap: 40px;
+    transition: transform 0.2s ease;
 }
 
 .project-item.completed {
     order: 998;
     margin-top: 20px;
+}
+
+.project-item.todo-dragged-over {
+    transform: scale(1.1);
 }
 
 .trash-area {
@@ -181,6 +186,10 @@ aside {
 
 .todo-item.completed .todo-heading {
     background-color: var(--completed-task-color);
+}
+
+.todo-item.is-dragged {
+    cursor: pointer;
 }
 
 .todo-heading {

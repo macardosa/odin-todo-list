@@ -5,7 +5,7 @@ import doubleArrowUpIcon from "./assets/icons/double-arrow-up-icon.svg";
 import editIcon from "./assets/icons/edit-icon.svg";
 import deleteIcon from "./assets/icons/delete-icon.svg";
 
-export const createDisplayManager = (TodoList) => {
+export const createDisplayManager = (TodoList, projects) => {
     const todoListElement = document.querySelector(".todo-list");
     const overlay = document.querySelector(".overlay");
     const taskForm = document.querySelector(".task-form");
@@ -99,6 +99,19 @@ export const createDisplayManager = (TodoList) => {
                 seeDetailsIcon.src = doubleArrowDownIcon;
                 headingSection.classList.remove("details-visible");
             }
+        });
+
+        // detect when todo list is dragged
+        listItem.draggable = "true";
+        listItem.addEventListener("dragstart", (e) => {
+            listItem.classList.add("is-dragged");
+            e.dataTransfer.setData("todo-id", listItem.dataset.id);
+            tickBox.style.display = "none";
+        });
+
+        listItem.addEventListener("dragend", (e) => {
+            tickBox.style.display = "block";
+            listItem.classList.remove("is-dragged");
         });
 
         return listItem;
@@ -227,7 +240,22 @@ export const createDisplayManager = (TodoList) => {
         // functionality to delete project by dragging to trash bin
         projectItem.addEventListener("dragstart", (e) => {
             projectsTrash.classList.add("active");
-            e.dataTransfer.setData("text/plain", projectNameText);
+            e.dataTransfer.setData("project", projectNameText);
+        });
+
+        // include todo item when dragged into the project
+        projectItem.addEventListener("dragover", (e) => {
+            projectItem.classList.add("todo-dragged-over");
+        });
+        projectItem.addEventListener("dragleave", (e) => {
+            projectItem.classList.remove("todo-dragged-over");
+        });
+        projectItem.addEventListener("drop", (e) => {
+            projectItem.classList.remove("todo-dragged-over");
+            const todoId = e.dataTransfer.getData("todo-id");
+            TodoList.setProject(todoId, projectNameText);
+            updateProjectCounts();
+            renderTodoList(activeProject);
         });
 
         return projectItem;
@@ -242,14 +270,14 @@ export const createDisplayManager = (TodoList) => {
         e.stopPropagation(); // prevent document handler
         projectsTrash.classList.remove("active");
 
-        const draggedProjectName = e.dataTransfer.getData("text/plain");
+        const draggedProjectName = e.dataTransfer.getData("project");
         removeProject(draggedProjectName)
     });
 
     document.addEventListener("drop", (e) => {
         projectsTrash.classList.remove("active");
     });
-
+    //-----------------------------------------------------------------
 
     function removeProject(projectName) {
         TodoList.removeProject(projectName);
@@ -267,12 +295,13 @@ export const createDisplayManager = (TodoList) => {
         if (e.target.classList.contains("new-project-btn")) {
             const input = projectsListElement.querySelector(".new-project-input");
             const projectName = input.value;
-            if (projectName !== "") {
+            if (projectName !== "" && !projects.includes(projectName)) {
                 // remove the input and button fields to add new project
                 projectsListElement.lastElementChild.remove();
                 projectsListElement.lastElementChild.remove();
 
                 // append the new project item
+                projects.push(projectName);
                 const projectItem = createProjectField(projectName);
                 projectsListElement.appendChild(projectItem);
             }
@@ -281,8 +310,13 @@ export const createDisplayManager = (TodoList) => {
     });
 
     function updateProjectCounts() {
-        const projects = TodoList.getListOfProjects();
-        Object.entries(projects).forEach(([projectName, projectCount]) => {
+        const projectCounts = TodoList.countProjects();
+        projects.forEach(project => {
+            if (!(project in projectCounts)) {
+                projectCounts[project] = 0;
+            }
+        });
+        Object.entries(projectCounts).forEach(([projectName, projectCount]) => {
             const projectCountElement = projectsListElement.querySelector(`[data-project="${projectName}"] .project-count`);
             projectCountElement.textContent = projectCount;
         });

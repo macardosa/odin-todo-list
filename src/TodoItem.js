@@ -68,5 +68,18 @@ export class TodoItem {
             ? this.projects.at(-1)
             : "My ToDos";
     }
+
+    set project(projectName) {
+        // ensure default always exists
+        if (this._projects.length === 0) {
+            this._projects.push(this._defaultProject);
+        }
+
+        if (this._projects.length > 1) {
+            this._projects[1] = projectName;
+        } else {
+            this._projects.push(projectName);
+        }
+    }
 }
 
