@@ -271,7 +271,7 @@ export const createDisplayManager = (TodoList, projects) => {
         projectsTrash.classList.remove("active");
 
         const draggedProjectName = e.dataTransfer.getData("project");
-        removeProject(draggedProjectName)
+        removeProject(draggedProjectName);
     });
 
     document.addEventListener("drop", (e) => {
@@ -280,10 +280,17 @@ export const createDisplayManager = (TodoList, projects) => {
     //-----------------------------------------------------------------
 
     function removeProject(projectName) {
+        // remove all assigned todos to this project
         TodoList.removeProject(projectName);
         const projectItem = projectsListElement
             .querySelector(`[data-project=${projectName}]`);
         projectItem.remove();
+
+        // remove project from list of projects
+        const index = projects.indexOf(projectName);
+        if (index !== -1) {
+            projects.splice(index, 1);
+        }
     }
 
     projectsListElement.addEventListener("click", (e) => {
@@ -320,7 +327,6 @@ export const createDisplayManager = (TodoList, projects) => {
             const projectCountElement = projectsListElement.querySelector(`[data-project="${projectName}"] .project-count`);
             projectCountElement.textContent = projectCount;
         });
-        console.log(projects);
     }
 
     // logic to remove todo items when task is marked as completed
