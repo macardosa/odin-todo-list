@@ -4,8 +4,10 @@ import doubleArrowDownIcon from "./assets/icons/double-arrow-down-icon.svg";
 import doubleArrowUpIcon from "./assets/icons/double-arrow-up-icon.svg";
 import editIcon from "./assets/icons/edit-icon.svg";
 import deleteIcon from "./assets/icons/delete-icon.svg";
+import crossIconSource from "./assets/icons/x.svg";
+import checkIconSource from "./assets/icons/check.svg";
 
-export const createDisplayManager = (TodoList, projects, activeProject) => {
+export const createDisplayManager = (TodoList, projects, defaultProject, activeProject) => {
     const todoListElement = document.querySelector(".todo-list");
     const overlay = document.querySelector(".overlay");
     const taskForm = document.querySelector(".task-form");
@@ -193,6 +195,29 @@ export const createDisplayManager = (TodoList, projects, activeProject) => {
         notifyChange();
     };
 
+    // Allow editing name of user created projects
+    const mainHeading = document.querySelector(".main-heading");
+    mainHeading.addEventListener("click", (e) => {
+        if (activeProject.get() !== defaultProject
+            && activeProject.get() !== "Completed") {
+            mainHeading.contentEditable = true;
+        }
+    });
+    mainHeading.addEventListener("blur", (e) => {
+        const oldProjectName = activeProject.get();
+        const newProjectName = mainHeading.textContent;
+        // update each todo item
+        TodoList.updateProject(oldProjectName, newProjectName);
+        // update the projects list
+        const index = projects.findIndex(project => project === oldProjectName);
+        projects[index] = newProjectName;
+        // save persistently
+        notifyChange();
+        // update render state of page
+        renderProjectsList();
+        renderTodoList(newProjectName);
+    });
+
     taskForm.querySelector(".task-form-btn")
         .addEventListener("submit", (e) => {
             e.preventDefault(); // prevent submitting the form
@@ -228,7 +253,7 @@ export const createDisplayManager = (TodoList, projects, activeProject) => {
 
     function createProjectField(projectNameText) {
         const projectItem = document.createElement("div");
-        projectItem.classList.add("project-item");
+        projectItem.classList.add("project-item", "dynamic");
         projectItem.dataset.project = projectNameText;
         projectItem.draggable = "true";
 
@@ -302,6 +327,10 @@ export const createDisplayManager = (TodoList, projects, activeProject) => {
     }
 
     function renderProjectsList() {
+        // remove all previously created elements 
+        // (important in case updating the projects list)
+        projectsListElement.querySelectorAll(".dynamic")
+            .forEach(el => el.remove());
         for (const project of projects) {
             const projectItem = createProjectField(project);
             projectsListElement.appendChild(projectItem);
@@ -314,20 +343,26 @@ export const createDisplayManager = (TodoList, projects, activeProject) => {
             renderTodoList(projectName);
             return;
         }
-        if (e.target.classList.contains("new-project-btn")) {
+        if (e.target.classList.contains("new-project-btn") &&
+            e.target.classList.contains("add")) {
             const input = projectsListElement.querySelector(".new-project-input");
             const projectName = input.value;
             if (projectName !== "" && !projects.includes(projectName)) {
                 // remove the input and button fields to add new project
-                projectsListElement.querySelector(".new-project-input").remove();
-                projectsListElement.querySelector(".new-project-btn").remove();
+                projectsListElement.querySelector(".new-project-form").remove();
 
                 // append the new project item
                 projects.push(projectName);
                 const projectItem = createProjectField(projectName);
                 projectsListElement.appendChild(projectItem);
+
+                notifyChange();
             }
-            notifyChange();
+            return;
+        }
+        if (e.target.classList.contains("new-project-btn") &&
+            e.target.classList.contains("cancel")) {
+            projectsListElement.querySelector(".new-project-form").remove();
             return;
         }
     });
@@ -375,15 +410,35 @@ export const createDisplayManager = (TodoList, projects, activeProject) => {
     // button to add new projects
     document.querySelector(".add-project-btn")
         .addEventListener("click", (e) => {
-            // create input to take project name
+            const container = document.createElement("div");
+            container.classList.add("new-project-form");
+
             const input = document.createElement("input");
             input.classList.add("new-project-input");
-            const btn = document.createElement("button");
-            btn.classList.add("new-project-btn");
-            btn.textContent = "Add Project";
-            projectsListElement.appendChild(input);
-            projectsListElement.appendChild(btn);
+            input.placeholder = "Name of the new project";
+            container.appendChild(input);
 
+            const btnsContainer = document.createElement("div");
+            btnsContainer.classList.add("new-form-btns-container");
+            
+            const cancelIcon = document.createElement("img");
+            cancelIcon.src = crossIconSource;
+            cancelIcon.classList.add("new-project-btn", "cancel");
+            btnsContainer.appendChild(cancelIcon);
+
+            const addProjectIcon = document.createElement("img");
+            addProjectIcon.src = checkIconSource;
+            addProjectIcon.classList.add("new-project-btn", "add");
+            btnsContainer.appendChild(addProjectIcon);
+
+            container.appendChild(btnsContainer);
+            // const btn = document.createElement("button");
+            // btn.classList.add("new-project-btn");
+            // btn.textContent = "Add Project";
+            // container.appendChild(btn);
+
+            projectsListElement.appendChild(container);
+            input.focus(); // use after element is attached to DOM so browser don't ignores it
         });
 
     // button to add new todo

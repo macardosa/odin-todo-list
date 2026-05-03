@@ -132,6 +132,20 @@ aside {
     cursor: pointer;
 }
 
+.new-project-form {
+    border: 2px solid black;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 5px;
+    border-radius: 10px;
+}
+
+.new-form-btns-container {
+    display: flex;
+    justify-content: space-between;
+}
+
 .new-project-input {
     padding: 5px;
     border-radius: 5px;
@@ -139,16 +153,25 @@ aside {
 }
 
 .new-project-btn {
-    background-color: #f0f0f0;;
-    padding: 5px;
+    background-color: #f0f0f0;
     color: purple;
     border-radius: 5px;
     align-self: center;
     border: none;
+    transition: transform 0.2s ease;
+}
+
+.new-project-btn.cancel {
+    background-color: tomato;
+}
+
+.new-project-btn.add {
+    background-color: greenyellow;
 }
 
 .new-project-btn:hover {
     cursor: pointer;
+    transform: scale(1.1);
 }
 
 .new-project-input:focus {

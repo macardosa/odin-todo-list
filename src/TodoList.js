@@ -100,6 +100,14 @@ export function createTodoList(listOfTodoItems) {
         list.forEach(item => item.removeProject(projectToDelete));
     }
 
+    function updateProject(oldName, newName) {
+        list.forEach(todo => {
+            if (todo.project !== todo.defaultProject && todo.project === oldName) {
+                todo.project = newName;
+            }
+        });
+    }
+
     return {
         getList,
         getListForProject,
@@ -112,6 +120,7 @@ export function createTodoList(listOfTodoItems) {
         findTaskById,
         getCompletedList,
         removeProject,
-        setProject
+        setProject,
+        updateProject
     }
 }

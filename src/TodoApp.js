@@ -6,8 +6,9 @@ export class TodoApp {
     constructor() {
         this.todoList = createTodoList();
         this.userProjects = [];
-        this.activeProject = "My ToDos"; // default
-        this.DOM = createDisplayManager(this.todoList, this.userProjects, {
+        this.defaultProject = "My ToDos";
+        this.activeProject = this.defaultProject;
+        this.DOM = createDisplayManager(this.todoList, this.userProjects, this.defaultProject, {
             get: ( ) => this.activeProject,
             set: (v) => this.activeProject = v
         });
