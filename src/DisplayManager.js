@@ -55,6 +55,15 @@ export const createDisplayManager = (TodoList, projects, defaultProject, activeP
         dueDate.classList.add("due-date");
         headingSection.appendChild(dueDate);
 
+        // box showing the project assigned to this task if shown in default or completed layouts
+        if (todo.project !== defaultProject && todo.project !== activeProject.get()) {
+            const projectBox = document.createElement("div");
+            projectBox.textContent = todo.project;
+            projectBox.classList.add("todo-item-project-box");
+            headingSection.appendChild(projectBox);
+            console.log("done");
+        }
+
         // add style according to priority
         headingSection.classList.add(`${todo.priority.toLowerCase()}-priority`);
 
@@ -198,6 +207,7 @@ export const createDisplayManager = (TodoList, projects, defaultProject, activeP
     }
 
     const renderTodoList = (project) => {
+        activeProject.set(project);
         const heading = document.querySelector(".main-heading");
         heading.textContent = project;
         todoListElement.replaceChildren();
@@ -223,7 +233,6 @@ export const createDisplayManager = (TodoList, projects, defaultProject, activeP
         }
 
         updateProjectCounts();
-        activeProject.set(project);
         notifyChange();
     };
 
