@@ -2,10 +2,11 @@ import { da } from "date-fns/locale";
 import { TodoItem } from "./TodoItem.js";
 import doubleArrowDownIcon from "./assets/icons/double-arrow-down-icon.svg";
 import doubleArrowUpIcon from "./assets/icons/double-arrow-up-icon.svg";
-import editIcon from "./assets/icons/edit-icon.svg";
+import editIcon from "./assets/icons/pencil.svg";
 import deleteIcon from "./assets/icons/delete-icon.svg";
 import crossIconSource from "./assets/icons/x.svg";
 import checkIconSource from "./assets/icons/check.svg";
+import recoverIcon from "./assets/icons/rotate-ccw.svg";
 
 export const createDisplayManager = (TodoList, projects, defaultProject, activeProject) => {
     const todoListElement = document.querySelector(".todo-list");
@@ -61,7 +62,6 @@ export const createDisplayManager = (TodoList, projects, defaultProject, activeP
             projectBox.textContent = todo.project;
             projectBox.classList.add("todo-item-project-box");
             headingSection.appendChild(projectBox);
-            console.log("done");
         }
 
         // add style according to priority
@@ -93,6 +93,10 @@ export const createDisplayManager = (TodoList, projects, defaultProject, activeP
         const editBtn = document.createElement("img");
         editBtn.src = editIcon;
         editBtn.classList.add("edit-btn", `${todo.priority.toLowerCase()}`);
+        if (activeProject.get() === "Completed") {
+            editBtn.src = recoverIcon;
+            editBtn.classList.add("recover");
+        }
         editBtn.dataset.id = todo.id;
         controllers.appendChild(editBtn);
 
@@ -172,12 +176,18 @@ export const createDisplayManager = (TodoList, projects, defaultProject, activeP
     }
 
     const updateInputTaskForm = (taskId) => {
-        // attach info related to todo task and flag update state
-        taskForm.classList.add("update-task");
-        taskForm.dataset.id = taskId;
-
         const taskFormBtn = taskForm.querySelector(".task-form-btn");
-        taskFormBtn.textContent = "Update";
+        if (activeProject.get() === "Completed") {
+            // flag recover state
+            taskForm.classList.add("update-task", "recover-task");
+            taskFormBtn.textContent = "Recover";
+        } else {
+            // flag update state
+            taskForm.classList.add("update-task");
+            taskFormBtn.textContent = "Update";
+        }
+        // attach info related to todo task
+        taskForm.dataset.id = taskId;
 
         const todo = TodoList.findTaskById(taskId);
 
@@ -271,6 +281,11 @@ export const createDisplayManager = (TodoList, projects, defaultProject, activeP
         if (!title || !dueDate) {
             taskForm.reportValidity?.();
             return;
+        }
+
+        if (e.target.classList.contains("recover-task")) {
+            TodoList.recoverTask(e.target.dataset.id);
+            e.target.classList.remove("recover-task");
         }
 
         if (e.target.classList.contains("update-task")) {

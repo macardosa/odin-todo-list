@@ -10,7 +10,7 @@ export class TodoItem {
         this.id = crypto.randomUUID();
         this._defaultProject = "My ToDos";
         this.userProject = (project && project !== this._defaultProject)
-            ? project 
+            ? project
             : null;
         this.completionDate = null;
     }
@@ -48,6 +48,11 @@ export class TodoItem {
     complete() {
         this._completed = true;
         this.completionDate = new Date();
+    }
+
+    recover() {
+        this._completed = false;
+        this.completionDate = null;
     }
 
     get completed() {

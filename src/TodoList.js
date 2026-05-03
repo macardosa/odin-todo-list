@@ -39,6 +39,12 @@ export function createTodoList(listOfTodoItems) {
         return index;
     }
 
+    function recoverTask(id) {
+        const index = list.findIndex((todo) => todo.id === id);
+        list[index].recover();
+        return index;
+    }
+
     function comparePriority(a, b) {
         const order = { HIGH: 1, MEDIUM: 2, LOW: 3 };
         return order[a] - order[b];
@@ -117,6 +123,7 @@ export function createTodoList(listOfTodoItems) {
         updateTask,
         getTask,
         addTask,
+        recoverTask,
         findTaskById,
         getCompletedList,
         removeProject,
