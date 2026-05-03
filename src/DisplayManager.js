@@ -218,8 +218,7 @@ export const createDisplayManager = (TodoList, projects, defaultProject, activeP
         renderTodoList(newProjectName);
     });
 
-    taskForm.querySelector(".task-form-btn")
-        .addEventListener("submit", (e) => {
+    taskForm.addEventListener("submit", (e) => {
             e.preventDefault(); // prevent submitting the form
 
             const title = taskForm.querySelector("[name=task-form-title]").value;
@@ -434,10 +433,6 @@ export const createDisplayManager = (TodoList, projects, defaultProject, activeP
             btnsContainer.appendChild(addProjectIcon);
 
             container.appendChild(btnsContainer);
-            // const btn = document.createElement("button");
-            // btn.classList.add("new-project-btn");
-            // btn.textContent = "Add Project";
-            // container.appendChild(btn);
 
             projectsListElement.appendChild(container);
             input.focus(); // use after element is attached to DOM so browser don't ignores it
