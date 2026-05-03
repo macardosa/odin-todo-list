@@ -303,8 +303,10 @@ export const createDisplayManager = (TodoList, projects, defaultProject, activeP
         projectsTrash.classList.remove("active");
 
         const draggedProjectName = e.dataTransfer.getData("project");
-        removeProject(draggedProjectName);
-        notifyChange();
+        if (draggedProjectName) {
+            removeProject(draggedProjectName);
+            notifyChange();
+        }
     });
 
     document.addEventListener("drop", (e) => {
@@ -420,7 +422,7 @@ export const createDisplayManager = (TodoList, projects, defaultProject, activeP
 
             const btnsContainer = document.createElement("div");
             btnsContainer.classList.add("new-form-btns-container");
-            
+
             const cancelIcon = document.createElement("img");
             cancelIcon.src = crossIconSource;
             cancelIcon.classList.add("new-project-btn", "cancel");
