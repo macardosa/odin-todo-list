@@ -22,12 +22,12 @@ if ! git show-ref --verify --quiet refs/heads/gh-pages; then
   git branch gh-pages
 fi
 
-# Build project
-npm run build
-
 # Follow your exact steps
 git checkout gh-pages
 git merge main --no-edit
+
+# Build project
+npm run build
 
 git add -f dist
 git commit -m "Deployment commit" || echo "Nothing to commit"
