@@ -29,7 +29,7 @@ git merge main --no-edit
 # Build project
 npm run build
 
-git add -f dist
+git add dist -f
 git commit -m "Deployment commit" || echo "Nothing to commit"
 
 git subtree push --prefix dist origin gh-pages
