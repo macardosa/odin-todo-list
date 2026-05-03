@@ -1,7 +1,7 @@
 import { format, compareAsc } from "date-fns";
 
 export function createTodoList(listOfTodoItems) {
-    const list = listOfTodoItems || []; 
+    const list = listOfTodoItems || [];
 
     function getTask(index) {
         if (index >= list.length || index < 0) {
@@ -89,7 +89,7 @@ export function createTodoList(listOfTodoItems) {
 
                 if (!todoItem.completed) {
                     projectCounts[project]++;
-                }     
+                }
             });
 
             return projectCounts;

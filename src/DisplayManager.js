@@ -126,7 +126,7 @@ export const createDisplayManager = (TodoList, projects, defaultProject, activeP
     const updateTodoItem = (todo) => {
         const modifiedListItem = createTodoItem(todo);
         const currentListItem = Array.from(todoListElement.querySelectorAll(".todo-item"))
-            .find(item => item.dataset.id === todo.id);
+            .find(item => item.dataset.id === String(todo.id));
         currentListItem.replaceWith(modifiedListItem);
     }
 
@@ -136,10 +136,12 @@ export const createDisplayManager = (TodoList, projects, defaultProject, activeP
     }
 
     const updateInputTaskForm = (taskId) => {
+        // attach info related to todo task and flag update state
+        taskForm.classList.add("update-task");
+        taskForm.dataset.id = taskId;
+
         const taskFormBtn = taskForm.querySelector(".task-form-btn");
-        taskFormBtn.classList.add("update-task");
         taskFormBtn.textContent = "Update";
-        taskFormBtn.dataset.id = taskId;
 
         const todo = TodoList.findTaskById(taskId);
 
