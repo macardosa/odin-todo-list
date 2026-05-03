@@ -59,6 +59,7 @@ export class TodoItem {
         this.dueDate = new Date(data.dueDate);
         this.priority = data.priority;
         this.description = data.description;
+        this.project = data.project;
     }
 
     dueDateString() {
@@ -84,7 +85,7 @@ export class TodoItem {
     get project() {
         return (this.userProject)
             ? this.userProject
-            : this._defaultProjectProject;
+            : this._defaultProject;
     }
 
     set project(projectName) {

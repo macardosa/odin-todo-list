@@ -44,19 +44,28 @@
             <input name="task-form-title" type="text" autofocus autocomplete="off" required>
         </label>
 
-        <label class="task-form-due-date">
-            Due Date
-            <input name="task-form-due-date" type="date" required>
-        </label>
-
-        <label class="task-form-priority">
-            Priority
-            <select name="task-form-priority">
-                <option value="LOW">LOW</option>
-                <option value="MEDIUM">MEDIUM</option>
-                <option value="HIGH">HIGH</option>
-            </select>
-        </label>
+        <div class="task-form-details-wrapper">
+            Details
+            <div class="task-form-details">
+                <label class="task-form-due-date">
+                    Due Date
+                    <input name="task-form-due-date" type="date" required>
+                </label>
+                <label class="task-form-priority">
+                    Priority
+                    <select name="task-form-priority">
+                        <option value="LOW">LOW</option>
+                        <option value="MEDIUM">MEDIUM</option>
+                        <option value="HIGH">HIGH</option>
+                    </select>
+                </label>
+                <!-- <label class="task-form-avail-projects">
+                    Custom Project
+                    <select name="task-form-avail-projects">
+                    </select>
+                </label> -->
+            </div>
+        </div>
 
         <label class="task-form-description">
             Description

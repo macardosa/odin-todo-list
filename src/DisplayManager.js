@@ -135,6 +135,31 @@ export const createDisplayManager = (TodoList, projects, defaultProject, activeP
     const renderInputTaskForm = () => {
         overlay.style.display = "block";
         taskForm.style.display = "grid";
+
+        if (projects.length === 0) {
+            return;
+        }
+
+        // add list of available projects
+        taskForm.querySelector(".task-form-avail-projects")?.remove();
+
+        const labelElement = document.createElement("label");
+        labelElement.textContent = "Custom Project";
+        labelElement.classList.add("task-form-avail-projects");
+        const selectElement = document.createElement("select");
+        selectElement.name = "task-form-avail-projects";
+
+        projects.forEach(project => {
+            const option = document.createElement("option");
+            option.value = `${project}`;
+            option.textContent = `${project}`;
+            selectElement.appendChild(option);
+        });
+        labelElement.appendChild(selectElement);
+
+        // add to form
+        const details = taskForm.querySelector(".task-form-details");
+        details.appendChild(labelElement);
     }
 
     const updateInputTaskForm = (taskId) => {
@@ -155,6 +180,9 @@ export const createDisplayManager = (TodoList, projects, defaultProject, activeP
 
         const priority = taskForm.querySelector("[name=task-form-priority]");
         priority.value = todo.priority;
+
+        const customProjects = taskForm.querySelector("[name=task-form-avail-projects]");
+        customProjects.value = todo.userProject;
 
         const description = taskForm.querySelector("[name=task-form-description]");
         description.value = todo.description;
@@ -229,6 +257,7 @@ export const createDisplayManager = (TodoList, projects, defaultProject, activeP
         const dueDate = taskForm.querySelector("[name=task-form-due-date]").value;
         const priority = taskForm.querySelector("[name=task-form-priority]").value;
         const description = taskForm.querySelector("[name=task-form-description]").value;
+        const project = taskForm.querySelector("[name=task-form-avail-projects]").value || activeProject.get();
 
         if (!title || !dueDate) {
             taskForm.reportValidity?.();
@@ -237,11 +266,11 @@ export const createDisplayManager = (TodoList, projects, defaultProject, activeP
 
         if (e.target.classList.contains("update-task")) {
             const id = e.target.dataset.id;
-            const index = TodoList.updateTask(id, { title, dueDate, priority, description });
+            const index = TodoList.updateTask(id, { title, dueDate, priority, description, project });
             updateTodoItem(TodoList.getTask(index));
             e.target.classList.remove("update-task");
         } else {
-            TodoList.addTask(new TodoItem(title, dueDate, priority, description, activeProject.get()));
+            TodoList.addTask(new TodoItem(title, dueDate, priority, description, project));
         }
 
         notifyChange();
