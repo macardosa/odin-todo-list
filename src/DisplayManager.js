@@ -277,7 +277,7 @@ export const createDisplayManager = (TodoList, projects, defaultProject, activeP
         const dueDate = taskForm.querySelector("[name=task-form-due-date]").value;
         const priority = taskForm.querySelector("[name=task-form-priority]").value;
         const description = taskForm.querySelector("[name=task-form-description]").value;
-        const project = taskForm.querySelector("[name=task-form-avail-projects]").value || activeProject.get();
+        const project = taskForm.querySelector("[name=task-form-avail-projects]")?.value || activeProject.get();
 
         if (!title || !dueDate) {
             taskForm.reportValidity?.();
