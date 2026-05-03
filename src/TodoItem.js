@@ -7,12 +7,16 @@ export class TodoItem {
         this.dueDate = new Date(dueDate);
         this.priority = (priority === undefined) ? "LOW" : priority;
         this._completed = false;
-        this.id = crypto.randomUUID();
+        this.id = crypto.randomUUID?.() ?? this.generateId();
         this._defaultProject = "My ToDos";
         this.userProject = (project && project !== this._defaultProject)
             ? project
             : null;
         this.completionDate = null;
+    }
+
+    generateId() {
+        return Date.now().toString(36) + Math.random().toString(36).slice(2);
     }
 
     static fromJSON(obj) {
