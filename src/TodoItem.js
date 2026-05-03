@@ -40,8 +40,10 @@ export class TodoItem {
     }
 
     timeLeft() {
-        let now = new Date();
-        let daysLeft = Math.floor((this.dueDate - now) / (1000 * 3600 * 24));
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const due = new Date(this.dueDate.getFullYear(), this.dueDate.getMonth(), this.dueDate.getDate());
+        let daysLeft = Math.round((due - today) / (1000 * 3600 * 24));
         return daysLeft;
     }
 
