@@ -168,6 +168,7 @@ export const createDisplayManager = (TodoList, projects, defaultProject, activeP
             option.textContent = `${project}`;
             selectElement.appendChild(option);
         });
+        selectElement.value = activeProject.get();
         labelElement.appendChild(selectElement);
 
         // add to form
