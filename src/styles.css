@@ -44,8 +44,12 @@ body {
     background-color: var(--main-bg-color);
     height: 100vh;
     display: grid;
-    grid-template-columns: 1fr 4fr;
-    overflow: hidden; /* important for sticking the aside */
+
+    @media (width > 600px) {
+        grid-template-columns: 1fr 4fr;
+        overflow: hidden;
+        /* important for sticking the aside */
+    }
 }
 
 h1,
@@ -60,9 +64,13 @@ main {
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-    gap: 10px;
+    gap: 30px;
     padding: 10px;
-    overflow-y: auto; /* main can scroll but not aside */
+
+    @media (width > 600px) {
+        overflow-y: auto;
+        /* main can scroll but not aside */
+    }
 }
 
 aside {
@@ -196,17 +204,19 @@ aside {
 .todo-list {
     grid-area: main;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
     column-gap: 100px;
-    row-gap: 30px;
-    padding: 30px;
+    row-gap: 20px;
+    padding-inline: 30px;
     width: 100%;
-    align-items: start;
+    align-items: center;
+    justify-items: center;
 }
 
 .todo-item {
     border: 2px solid black;
     border-radius: 10px;
+    width: 400px;
 }
 
 .todo-item.completed .todo-heading {
@@ -274,7 +284,7 @@ aside {
     font-size: 1.2rem;
 }
 
-.todo-item.overdue .title{
+.todo-item.overdue .title {
     text-decoration: line-through;
 }
 
@@ -442,4 +452,52 @@ aside {
     background-color: rgb(241, 158, 158);
     cursor: pointer;
     transform: scale(1.1);
+}
+
+.main-heading-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.show-projects-btn {
+    display: none;
+}
+
+@media (max-width: 600px) {
+    body {
+        position: relative;
+    }
+
+    aside {
+        position: absolute;
+        top: 80px;
+        left: 5vw;
+        /* transform: translateX(-50%); */
+        width: 90vw;
+        height: 100vh;
+
+        z-index: 999;
+        border-radius: 20px;
+        display: none;
+    }
+
+    .show-projects-btn {
+        display: block;
+        transition: transform 0.2s ease;
+        width: 30px;
+    }
+
+    .show-projects-btn:hover {
+        cursor: pointer;
+        transform: scale(1.1);
+    }
+
+    aside.visible {
+        display: flex;
+    }
+
+    .todo-item {
+        width: 350px;
+    }
 }

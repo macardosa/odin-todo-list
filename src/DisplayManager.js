@@ -13,6 +13,8 @@ export const createDisplayManager = (TodoList, projects, defaultProject, activeP
     const taskForm = document.querySelector(".task-form");
     const projectsListElement = document.querySelector(".projects-list");
     const projectsTrash = projectsListElement.querySelector(".trash-area");
+    const asideElement = document.querySelector("aside");
+    const mainElement = document.querySelector("main");
 
     function notifyChange() {
         const event = new CustomEvent("todoChange");
@@ -221,31 +223,31 @@ export const createDisplayManager = (TodoList, projects, defaultProject, activeP
     });
 
     taskForm.addEventListener("submit", (e) => {
-            e.preventDefault(); // prevent submitting the form
+        e.preventDefault(); // prevent submitting the form
 
-            const title = taskForm.querySelector("[name=task-form-title]").value;
-            const dueDate = taskForm.querySelector("[name=task-form-due-date]").value;
-            const priority = taskForm.querySelector("[name=task-form-priority]").value;
-            const description = taskForm.querySelector("[name=task-form-description]").value;
+        const title = taskForm.querySelector("[name=task-form-title]").value;
+        const dueDate = taskForm.querySelector("[name=task-form-due-date]").value;
+        const priority = taskForm.querySelector("[name=task-form-priority]").value;
+        const description = taskForm.querySelector("[name=task-form-description]").value;
 
-            if (!title || !dueDate) {
-                taskForm.reportValidity?.();
-                return;
-            }
+        if (!title || !dueDate) {
+            taskForm.reportValidity?.();
+            return;
+        }
 
-            if (e.target.classList.contains("update-task")) {
-                const id = e.target.dataset.id;
-                const index = TodoList.updateTask(id, { title, dueDate, priority, description });
-                updateTodoItem(TodoList.getTask(index));
-                e.target.classList.remove("update-task");
-            } else {
-                TodoList.addTask(new TodoItem(title, dueDate, priority, description, activeProject.get()));
-            }
+        if (e.target.classList.contains("update-task")) {
+            const id = e.target.dataset.id;
+            const index = TodoList.updateTask(id, { title, dueDate, priority, description });
+            updateTodoItem(TodoList.getTask(index));
+            e.target.classList.remove("update-task");
+        } else {
+            TodoList.addTask(new TodoItem(title, dueDate, priority, description, activeProject.get()));
+        }
 
-            notifyChange();
-            renderTodoList(activeProject.get());
-            clearInputTaskForm();
-        });
+        notifyChange();
+        renderTodoList(activeProject.get());
+        clearInputTaskForm();
+    });
 
     taskForm.querySelector(".close-form-btn")
         .addEventListener("click", (e) => {
@@ -344,6 +346,12 @@ export const createDisplayManager = (TodoList, projects, defaultProject, activeP
         if (e.target.classList.contains("project-name")) {
             const projectName = e.target.textContent;
             renderTodoList(projectName);
+
+            // additionally in case of phone layout hide the aside after selecting
+            if (asideElement.classList.contains("visible")) {
+                asideElement.classList.remove("visible");
+                document.querySelector(".show-projects-btn").classList.add("hidden");
+            }
             return;
         }
         if (e.target.classList.contains("new-project-btn") &&
@@ -444,6 +452,18 @@ export const createDisplayManager = (TodoList, projects, defaultProject, activeP
     document.querySelector(".add-todo-btn")
         .addEventListener("click", () => {
             renderInputTaskForm();
+        });
+
+    // access the project view by clicking on the ellipsis 
+    document.querySelector(".show-projects-btn")
+        .addEventListener("click", (e) => {
+            if (e.target.classList.contains("hidden")) {
+                asideElement.classList.add("visible");
+                e.target.classList.remove("hidden")
+            } else {
+                asideElement.classList.remove("visible");
+                e.target.classList.add("hidden")
+            }
         });
 
     return {
