@@ -1,4 +1,3 @@
-import { da } from "date-fns/locale";
 import { TodoItem } from "./TodoItem.js";
 import doubleArrowDownIcon from "./assets/icons/double-arrow-down-icon.svg";
 import doubleArrowUpIcon from "./assets/icons/double-arrow-up-icon.svg";
@@ -202,7 +201,9 @@ export const createDisplayManager = (TodoList, projects, defaultProject, activeP
         priority.value = todo.priority;
 
         const customProjects = taskForm.querySelector("[name=task-form-avail-projects]");
-        customProjects.value = todo.userProject;
+        if (customProjects) {
+            customProjects.value = todo.userProject;
+        }
 
         const description = taskForm.querySelector("[name=task-form-description]");
         description.value = todo.description;
