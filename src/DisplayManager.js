@@ -1,528 +1,560 @@
-import { TodoItem } from "./TodoItem.js";
-import doubleArrowDownIcon from "./assets/icons/double-arrow-down-icon.svg";
-import doubleArrowUpIcon from "./assets/icons/double-arrow-up-icon.svg";
-import editIcon from "./assets/icons/pencil.svg";
-import deleteIcon from "./assets/icons/delete-icon.svg";
-import crossIconSource from "./assets/icons/x.svg";
-import checkIconSource from "./assets/icons/check.svg";
-import recoverIcon from "./assets/icons/rotate-ccw.svg";
+import { TodoItem } from './TodoItem.js';
+import doubleArrowDownIcon from './assets/icons/double-arrow-down-icon.svg';
+import doubleArrowUpIcon from './assets/icons/double-arrow-up-icon.svg';
+import editIcon from './assets/icons/pencil.svg';
+import deleteIcon from './assets/icons/delete-icon.svg';
+import crossIconSource from './assets/icons/x.svg';
+import checkIconSource from './assets/icons/check.svg';
+import recoverIcon from './assets/icons/rotate-ccw.svg';
 
-export const createDisplayManager = (TodoList, projects, defaultProject, activeProject) => {
-    const todoListElement = document.querySelector(".todo-list");
-    const overlay = document.querySelector(".overlay");
-    const taskForm = document.querySelector(".task-form");
-    const projectsListElement = document.querySelector(".projects-list");
-    const projectsTrash = projectsListElement.querySelector(".trash-area");
-    const asideElement = document.querySelector("aside");
-    const mainElement = document.querySelector("main");
+export const createDisplayManager = (
+  TodoList,
+  projects,
+  defaultProject,
+  activeProject
+) => {
+  const todoListElement = document.querySelector('.todo-list');
+  const overlay = document.querySelector('.overlay');
+  const taskForm = document.querySelector('.task-form');
+  const projectsListElement = document.querySelector('.projects-list');
+  const projectsTrash = projectsListElement.querySelector('.trash-area');
+  const asideElement = document.querySelector('aside');
+  const mainElement = document.querySelector('main');
 
-    function notifyChange() {
-        const event = new CustomEvent("todoChange");
-        document.dispatchEvent(event);
+  function notifyChange() {
+    const event = new CustomEvent('todoChange');
+    document.dispatchEvent(event);
+  }
+
+  const createTodoItem = (todo) => {
+    const listItem = document.createElement('div');
+    listItem.classList.add('todo-item');
+    listItem.dataset.id = todo.id;
+
+    // create heading
+    const headingSection = document.createElement('div');
+    headingSection.classList.add('todo-heading');
+    const title = document.createElement('h3');
+    title.textContent = todo.title;
+    title.classList.add('title');
+    headingSection.appendChild(title);
+
+    // add icon button to display details
+    const seeDetailsIcon = document.createElement('img');
+    seeDetailsIcon.src = doubleArrowDownIcon;
+    seeDetailsIcon.classList.add('todo-icon');
+    headingSection.appendChild(seeDetailsIcon);
+
+    const dueDate = document.createElement('div');
+    const daysLeft = todo.timeLeft();
+    if (daysLeft < 0) {
+      dueDate.textContent = 'Overdue';
+      listItem.classList.add('overdue');
+    } else if (daysLeft === 0) {
+      dueDate.textContent = 'Due Today';
+    } else if (daysLeft === 1) {
+      dueDate.textContent = 'Due Tomorrow';
+    } else {
+      dueDate.textContent = `${daysLeft} ${daysLeft <= 1 ? 'day' : 'days'} left`;
+    }
+    dueDate.classList.add('due-date');
+    headingSection.appendChild(dueDate);
+
+    // box showing the project assigned to this task if shown in default or completed layouts
+    if (
+      todo.project !== defaultProject &&
+      todo.project !== activeProject.get()
+    ) {
+      const projectBox = document.createElement('div');
+      projectBox.textContent = todo.project;
+      projectBox.classList.add('todo-item-project-box');
+      headingSection.appendChild(projectBox);
     }
 
-    const createTodoItem = (todo) => {
-        const listItem = document.createElement("div");
-        listItem.classList.add("todo-item");
-        listItem.dataset.id = todo.id;
+    // add style according to priority
+    headingSection.classList.add(`${todo.priority.toLowerCase()}-priority`);
 
-        // create heading 
-        const headingSection = document.createElement("div");
-        headingSection.classList.add("todo-heading");
-        const title = document.createElement("h3");
-        title.textContent = todo.title;
-        title.classList.add("title");
-        headingSection.appendChild(title);
+    // add tick boxes to handle completion of todos
+    const tickBox = document.createElement('div'); // used for clearing todo on completion
+    tickBox.classList.add('todo-tick-box');
+    headingSection.appendChild(tickBox);
 
-        // add icon button to display details
-        const seeDetailsIcon = document.createElement("img");
+    listItem.appendChild(headingSection);
+
+    // details section
+    const detailsSection = document.createElement('div');
+    detailsSection.classList.add('todo-details');
+    detailsSection.style.display = 'none';
+
+    // add description
+    const description = document.createElement('div');
+    description.textContent = todo.description;
+    description.classList.add('todo-description');
+    detailsSection.appendChild(description);
+
+    // add cotrol buttons
+    const controllers = document.createElement('div');
+    controllers.classList.add('controllers');
+
+    // button to edit task
+    const editBtn = document.createElement('img');
+    editBtn.src = editIcon;
+    editBtn.classList.add('edit-btn', `${todo.priority.toLowerCase()}`);
+    if (activeProject.get() === 'Completed') {
+      editBtn.src = recoverIcon;
+      editBtn.classList.add('recover');
+    }
+    editBtn.dataset.id = todo.id;
+    controllers.appendChild(editBtn);
+
+    // button to delete task
+    const deleteBtn = document.createElement('img');
+    deleteBtn.src = deleteIcon;
+    deleteBtn.classList.add('delete-btn', `${todo.priority.toLowerCase()}`);
+    controllers.appendChild(deleteBtn);
+
+    detailsSection.appendChild(controllers);
+    listItem.appendChild(detailsSection);
+
+    // allow user to see description on click
+    seeDetailsIcon.addEventListener('click', (e) => {
+      if (detailsSection.style.display === 'none') {
+        detailsSection.style.display = 'flex';
+        seeDetailsIcon.src = doubleArrowUpIcon;
+        headingSection.classList.add('details-visible');
+      } else {
+        detailsSection.style.display = 'none';
         seeDetailsIcon.src = doubleArrowDownIcon;
-        seeDetailsIcon.classList.add("todo-icon");
-        headingSection.appendChild(seeDetailsIcon);
+        headingSection.classList.remove('details-visible');
+      }
+    });
 
-        const dueDate = document.createElement("div");
-        const daysLeft = todo.timeLeft();
-        if (daysLeft < 0) {
-            dueDate.textContent = "Overdue";
-            listItem.classList.add("overdue");
-        } else if (daysLeft === 0) {
-            dueDate.textContent = "Due Today";
-        } else if (daysLeft === 1) {
-            dueDate.textContent = "Due Tomorrow";
-        } else {
-            dueDate.textContent = `${daysLeft} ${(daysLeft <= 1) ? "day" : "days"} left`;
-        }
-        dueDate.classList.add("due-date");
-        headingSection.appendChild(dueDate);
+    // detect when todo list is dragged
+    listItem.draggable = 'true';
+    listItem.addEventListener('dragstart', (e) => {
+      listItem.classList.add('is-dragged');
+      e.dataTransfer.setData('todo-id', listItem.dataset.id);
+      tickBox.style.display = 'none';
+    });
 
-        // box showing the project assigned to this task if shown in default or completed layouts
-        if (todo.project !== defaultProject && todo.project !== activeProject.get()) {
-            const projectBox = document.createElement("div");
-            projectBox.textContent = todo.project;
-            projectBox.classList.add("todo-item-project-box");
-            headingSection.appendChild(projectBox);
-        }
+    listItem.addEventListener('dragend', (e) => {
+      tickBox.style.display = 'block';
+      listItem.classList.remove('is-dragged');
+    });
 
-        // add style according to priority
-        headingSection.classList.add(`${todo.priority.toLowerCase()}-priority`);
+    return listItem;
+  };
 
-        // add tick boxes to handle completion of todos
-        const tickBox = document.createElement("div"); // used for clearing todo on completion
-        tickBox.classList.add("todo-tick-box");
-        headingSection.appendChild(tickBox);
+  const updateTodoItem = (todo) => {
+    const modifiedListItem = createTodoItem(todo);
+    const currentListItem = Array.from(
+      todoListElement.querySelectorAll('.todo-item')
+    ).find((item) => item.dataset.id === String(todo.id));
+    currentListItem.replaceWith(modifiedListItem);
+  };
 
-        listItem.appendChild(headingSection);
+  const renderInputTaskForm = () => {
+    overlay.style.display = 'block';
+    taskForm.style.display = 'grid';
 
-        // details section
-        const detailsSection = document.createElement("div");
-        detailsSection.classList.add("todo-details");
-        detailsSection.style.display = "none";
-
-        // add description
-        const description = document.createElement("div");
-        description.textContent = todo.description;
-        description.classList.add("todo-description");
-        detailsSection.appendChild(description);
-
-        // add cotrol buttons
-        const controllers = document.createElement("div");
-        controllers.classList.add("controllers");
-
-        // button to edit task
-        const editBtn = document.createElement("img");
-        editBtn.src = editIcon;
-        editBtn.classList.add("edit-btn", `${todo.priority.toLowerCase()}`);
-        if (activeProject.get() === "Completed") {
-            editBtn.src = recoverIcon;
-            editBtn.classList.add("recover");
-        }
-        editBtn.dataset.id = todo.id;
-        controllers.appendChild(editBtn);
-
-        // button to delete task
-        const deleteBtn = document.createElement("img");
-        deleteBtn.src = deleteIcon;
-        deleteBtn.classList.add("delete-btn", `${todo.priority.toLowerCase()}`);
-        controllers.appendChild(deleteBtn);
-
-        detailsSection.appendChild(controllers);
-        listItem.appendChild(detailsSection);
-
-        // allow user to see description on click
-        seeDetailsIcon.addEventListener("click", (e) => {
-            if (detailsSection.style.display === "none") {
-                detailsSection.style.display = "flex";
-                seeDetailsIcon.src = doubleArrowUpIcon;
-                headingSection.classList.add("details-visible");
-            } else {
-                detailsSection.style.display = "none";
-                seeDetailsIcon.src = doubleArrowDownIcon;
-                headingSection.classList.remove("details-visible");
-            }
-        });
-
-        // detect when todo list is dragged
-        listItem.draggable = "true";
-        listItem.addEventListener("dragstart", (e) => {
-            listItem.classList.add("is-dragged");
-            e.dataTransfer.setData("todo-id", listItem.dataset.id);
-            tickBox.style.display = "none";
-        });
-
-        listItem.addEventListener("dragend", (e) => {
-            tickBox.style.display = "block";
-            listItem.classList.remove("is-dragged");
-        });
-
-        return listItem;
+    if (projects.length === 0) {
+      return;
     }
 
-    const updateTodoItem = (todo) => {
-        const modifiedListItem = createTodoItem(todo);
-        const currentListItem = Array.from(todoListElement.querySelectorAll(".todo-item"))
-            .find(item => item.dataset.id === String(todo.id));
-        currentListItem.replaceWith(modifiedListItem);
+    // add list of available projects
+    taskForm.querySelector('.task-form-avail-projects')?.remove();
+
+    const labelElement = document.createElement('label');
+    labelElement.textContent = 'Custom Project';
+    labelElement.classList.add('task-form-avail-projects');
+    const selectElement = document.createElement('select');
+    selectElement.name = 'task-form-avail-projects';
+
+    projects.forEach((project) => {
+      const option = document.createElement('option');
+      option.value = `${project}`;
+      option.textContent = `${project}`;
+      selectElement.appendChild(option);
+    });
+    selectElement.value = activeProject.get();
+    labelElement.appendChild(selectElement);
+
+    // add to form
+    const details = taskForm.querySelector('.task-form-details');
+    details.appendChild(labelElement);
+  };
+
+  const updateInputTaskForm = (taskId) => {
+    const taskFormBtn = taskForm.querySelector('.task-form-btn');
+    if (activeProject.get() === 'Completed') {
+      // flag recover state
+      taskForm.classList.add('update-task', 'recover-task');
+      taskFormBtn.textContent = 'Recover';
+    } else {
+      // flag update state
+      taskForm.classList.add('update-task');
+      taskFormBtn.textContent = 'Update';
+    }
+    // attach info related to todo task
+    taskForm.dataset.id = taskId;
+
+    const todo = TodoList.findTaskById(taskId);
+
+    const title = taskForm.querySelector('[name=task-form-title]');
+    title.value = todo.title;
+
+    const dueDate = taskForm.querySelector('[name=task-form-due-date]');
+    dueDate.value = todo.dueDateString();
+
+    const priority = taskForm.querySelector('[name=task-form-priority]');
+    priority.value = todo.priority;
+
+    const customProjects = taskForm.querySelector(
+      '[name=task-form-avail-projects]'
+    );
+    if (customProjects) {
+      customProjects.value = todo.userProject;
     }
 
-    const renderInputTaskForm = () => {
-        overlay.style.display = "block";
-        taskForm.style.display = "grid";
+    const description = taskForm.querySelector('[name=task-form-description]');
+    description.value = todo.description;
+  };
 
-        if (projects.length === 0) {
-            return;
-        }
+  const clearInputTaskForm = () => {
+    taskForm.style.display = 'none';
+    overlay.style.display = 'none';
+    taskForm.querySelector("[name='task-form-title']").value = '';
+    taskForm.querySelector("[name='task-form-due-date']").value = '';
+    taskForm.querySelector("[name='task-form-priority']").value = 'LOW';
+    taskForm.querySelector("[name='task-form-description']").value = '';
+  };
 
-        // add list of available projects
-        taskForm.querySelector(".task-form-avail-projects")?.remove();
+  const renderTodoList = (project) => {
+    activeProject.set(project);
+    const heading = document.querySelector('.main-heading');
+    heading.textContent = project;
+    todoListElement.replaceChildren();
 
-        const labelElement = document.createElement("label");
-        labelElement.textContent = "Custom Project";
-        labelElement.classList.add("task-form-avail-projects");
-        const selectElement = document.createElement("select");
-        selectElement.name = "task-form-avail-projects";
-
-        projects.forEach(project => {
-            const option = document.createElement("option");
-            option.value = `${project}`;
-            option.textContent = `${project}`;
-            selectElement.appendChild(option);
-        });
-        selectElement.value = activeProject.get();
-        labelElement.appendChild(selectElement);
-
-        // add to form
-        const details = taskForm.querySelector(".task-form-details");
-        details.appendChild(labelElement);
+    if (project === 'Completed') {
+      const listOfTodoItems = TodoList.getCompletedList();
+      document.querySelector('.add-todo-btn').style.display = 'none';
+      listOfTodoItems.forEach((todo) => {
+        let listItem = createTodoItem(todo);
+        listItem.querySelector('.todo-tick-box').style.display = 'none';
+        listItem.classList.remove('overdue'); // in case exists
+        listItem.classList.add('completed');
+        listItem.querySelector('.due-date').textContent =
+          `${todo.completionDateString()}`;
+        todoListElement.appendChild(listItem);
+      });
+    } else {
+      const listOfTodoItems = TodoList.getListForProject(project);
+      document.querySelector('.add-todo-btn').style.display = 'block';
+      listOfTodoItems.forEach((todo) => {
+        let listItem = createTodoItem(todo);
+        todoListElement.appendChild(listItem);
+      });
     }
 
-    const updateInputTaskForm = (taskId) => {
-        const taskFormBtn = taskForm.querySelector(".task-form-btn");
-        if (activeProject.get() === "Completed") {
-            // flag recover state
-            taskForm.classList.add("update-task", "recover-task");
-            taskFormBtn.textContent = "Recover";
-        } else {
-            // flag update state
-            taskForm.classList.add("update-task");
-            taskFormBtn.textContent = "Update";
-        }
-        // attach info related to todo task
-        taskForm.dataset.id = taskId;
+    updateProjectCounts();
+    notifyChange();
+  };
 
-        const todo = TodoList.findTaskById(taskId);
+  // Allow editing name of user created projects
+  const mainHeading = document.querySelector('.main-heading');
+  mainHeading.addEventListener('click', (e) => {
+    if (
+      activeProject.get() !== defaultProject &&
+      activeProject.get() !== 'Completed'
+    ) {
+      mainHeading.contentEditable = true;
+    }
+  });
+  mainHeading.addEventListener('blur', (e) => {
+    const oldProjectName = activeProject.get();
+    const newProjectName = mainHeading.textContent;
+    // update each todo item
+    TodoList.updateProject(oldProjectName, newProjectName);
+    // update the projects list
+    const index = projects.findIndex((project) => project === oldProjectName);
+    projects[index] = newProjectName;
+    // save persistently
+    notifyChange();
+    // update render state of page
+    renderProjectsList();
+    renderTodoList(newProjectName);
+  });
 
-        const title = taskForm.querySelector("[name=task-form-title]");
-        title.value = todo.title;
+  taskForm.addEventListener('submit', (e) => {
+    e.preventDefault(); // prevent submitting the form
 
-        const dueDate = taskForm.querySelector("[name=task-form-due-date]");
-        dueDate.value = todo.dueDateString();
+    const title = taskForm.querySelector('[name=task-form-title]').value;
+    const dueDate = taskForm.querySelector('[name=task-form-due-date]').value;
+    const priority = taskForm.querySelector('[name=task-form-priority]').value;
+    const description = taskForm.querySelector(
+      '[name=task-form-description]'
+    ).value;
+    const project =
+      taskForm.querySelector('[name=task-form-avail-projects]')?.value ||
+      activeProject.get();
 
-        const priority = taskForm.querySelector("[name=task-form-priority]");
-        priority.value = todo.priority;
-
-        const customProjects = taskForm.querySelector("[name=task-form-avail-projects]");
-        if (customProjects) {
-            customProjects.value = todo.userProject;
-        }
-
-        const description = taskForm.querySelector("[name=task-form-description]");
-        description.value = todo.description;
+    if (!title || !dueDate) {
+      taskForm.reportValidity?.();
+      return;
     }
 
-    const clearInputTaskForm = () => {
-        taskForm.style.display = "none";
-        overlay.style.display = "none";
-        taskForm.querySelector("[name='task-form-title']").value = "";
-        taskForm.querySelector("[name='task-form-due-date']").value = "";
-        taskForm.querySelector("[name='task-form-priority']").value = "LOW";
-        taskForm.querySelector("[name='task-form-description']").value = "";
+    if (e.target.classList.contains('recover-task')) {
+      TodoList.recoverTask(e.target.dataset.id);
+      e.target.classList.remove('recover-task');
     }
 
-    const renderTodoList = (project) => {
-        activeProject.set(project);
-        const heading = document.querySelector(".main-heading");
-        heading.textContent = project;
-        todoListElement.replaceChildren();
+    if (e.target.classList.contains('update-task')) {
+      const id = e.target.dataset.id;
+      const index = TodoList.updateTask(id, {
+        title,
+        dueDate,
+        priority,
+        description,
+        project,
+      });
+      updateTodoItem(TodoList.getTask(index));
+      e.target.classList.remove('update-task');
+    } else {
+      TodoList.addTask(
+        new TodoItem(title, dueDate, priority, description, project)
+      );
+    }
 
-        if (project === "Completed") {
-            const listOfTodoItems = TodoList.getCompletedList();
-            document.querySelector(".add-todo-btn").style.display = "none";
-            listOfTodoItems.forEach(todo => {
-                let listItem = createTodoItem(todo);
-                listItem.querySelector(".todo-tick-box").style.display = "none";
-                listItem.classList.remove("overdue"); // in case exists
-                listItem.classList.add("completed");
-                listItem.querySelector(".due-date").textContent = `${todo.completionDateString()}`;
-                todoListElement.appendChild(listItem);
-            });
-        } else {
-            const listOfTodoItems = TodoList.getListForProject(project);
-            document.querySelector(".add-todo-btn").style.display = "block";
-            listOfTodoItems.forEach(todo => {
-                let listItem = createTodoItem(todo);
-                todoListElement.appendChild(listItem);
-            });
-        }
+    notifyChange();
+    renderTodoList(activeProject.get());
+    clearInputTaskForm();
+  });
 
-        updateProjectCounts();
+  taskForm.querySelector('.close-form-btn').addEventListener('click', (e) => {
+    clearInputTaskForm();
+  });
+
+  function createProjectField(projectNameText) {
+    const projectItem = document.createElement('div');
+    projectItem.classList.add('project-item', 'dynamic');
+    projectItem.dataset.project = projectNameText;
+    projectItem.draggable = 'true';
+
+    const projectName = document.createElement('div');
+    projectName.textContent = projectNameText;
+    projectName.classList.add('project-name');
+
+    const projectCount = document.createElement('div');
+    projectCount.classList.add('project-count');
+    projectCount.textContent = '0';
+
+    projectItem.appendChild(projectName);
+    projectItem.appendChild(projectCount);
+
+    // functionality to delete project by dragging to trash bin
+    projectItem.addEventListener('dragstart', (e) => {
+      projectsTrash.classList.add('active');
+      e.dataTransfer.setData('project', projectNameText);
+    });
+
+    // include todo item when dragged into the project
+    projectItem.addEventListener('dragover', (e) => {
+      projectItem.classList.add('todo-dragged-over');
+    });
+    projectItem.addEventListener('dragleave', (e) => {
+      projectItem.classList.remove('todo-dragged-over');
+    });
+    projectItem.addEventListener('drop', (e) => {
+      projectItem.classList.remove('todo-dragged-over');
+      const todoId = e.dataTransfer.getData('todo-id');
+      TodoList.setProject(todoId, projectNameText);
+      updateProjectCounts();
+      renderTodoList(activeProject.get());
+      notifyChange();
+    });
+
+    return projectItem;
+  }
+
+  // functionality to capture drop of dragged project
+  document.addEventListener('dragover', (e) => {
+    e.preventDefault(); // to allow drop
+  });
+
+  projectsTrash.addEventListener('drop', (e) => {
+    e.stopPropagation(); // prevent document handler
+    projectsTrash.classList.remove('active');
+
+    const draggedProjectName = e.dataTransfer.getData('project');
+    if (draggedProjectName) {
+      removeProject(draggedProjectName);
+      notifyChange();
+    }
+  });
+
+  document.addEventListener('drop', (e) => {
+    projectsTrash.classList.remove('active');
+  });
+  //-----------------------------------------------------------------
+
+  function removeProject(projectName) {
+    // remove all assigned todos to this project
+    TodoList.removeProject(projectName);
+    const projectItem = projectsListElement.querySelector(
+      `[data-project=${projectName}]`
+    );
+    projectItem.remove();
+
+    // remove project from list of projects
+    const index = projects.indexOf(projectName);
+    if (index !== -1) {
+      projects.splice(index, 1);
+    }
+  }
+
+  function renderProjectsList() {
+    // remove all previously created elements
+    // (important in case updating the projects list)
+    projectsListElement
+      .querySelectorAll('.dynamic')
+      .forEach((el) => el.remove());
+    for (const project of projects) {
+      const projectItem = createProjectField(project);
+      projectsListElement.appendChild(projectItem);
+    }
+  }
+
+  projectsListElement.addEventListener('click', (e) => {
+    if (e.target.classList.contains('project-name')) {
+      const projectName = e.target.textContent;
+      renderTodoList(projectName);
+
+      // additionally in case of phone layout hide the aside after selecting
+      if (asideElement.classList.contains('visible')) {
+        asideElement.classList.remove('visible');
+        document.querySelector('.show-projects-btn').classList.add('hidden');
+      }
+      return;
+    }
+    if (
+      e.target.classList.contains('new-project-btn') &&
+      e.target.classList.contains('add')
+    ) {
+      const input = projectsListElement.querySelector('.new-project-input');
+      const projectName = input.value;
+      if (projectName !== '' && !projects.includes(projectName)) {
+        // remove the input and button fields to add new project
+        projectsListElement.querySelector('.new-project-form').remove();
+
+        // append the new project item
+        projects.push(projectName);
+        const projectItem = createProjectField(projectName);
+        projectsListElement.appendChild(projectItem);
+
         notifyChange();
-    };
-
-    // Allow editing name of user created projects
-    const mainHeading = document.querySelector(".main-heading");
-    mainHeading.addEventListener("click", (e) => {
-        if (activeProject.get() !== defaultProject
-            && activeProject.get() !== "Completed") {
-            mainHeading.contentEditable = true;
-        }
-    });
-    mainHeading.addEventListener("blur", (e) => {
-        const oldProjectName = activeProject.get();
-        const newProjectName = mainHeading.textContent;
-        // update each todo item
-        TodoList.updateProject(oldProjectName, newProjectName);
-        // update the projects list
-        const index = projects.findIndex(project => project === oldProjectName);
-        projects[index] = newProjectName;
-        // save persistently
-        notifyChange();
-        // update render state of page
-        renderProjectsList();
-        renderTodoList(newProjectName);
-    });
-
-    taskForm.addEventListener("submit", (e) => {
-        e.preventDefault(); // prevent submitting the form
-
-        const title = taskForm.querySelector("[name=task-form-title]").value;
-        const dueDate = taskForm.querySelector("[name=task-form-due-date]").value;
-        const priority = taskForm.querySelector("[name=task-form-priority]").value;
-        const description = taskForm.querySelector("[name=task-form-description]").value;
-        const project = taskForm.querySelector("[name=task-form-avail-projects]")?.value || activeProject.get();
-
-        if (!title || !dueDate) {
-            taskForm.reportValidity?.();
-            return;
-        }
-
-        if (e.target.classList.contains("recover-task")) {
-            TodoList.recoverTask(e.target.dataset.id);
-            e.target.classList.remove("recover-task");
-        }
-
-        if (e.target.classList.contains("update-task")) {
-            const id = e.target.dataset.id;
-            const index = TodoList.updateTask(id, { title, dueDate, priority, description, project });
-            updateTodoItem(TodoList.getTask(index));
-            e.target.classList.remove("update-task");
-        } else {
-            TodoList.addTask(new TodoItem(title, dueDate, priority, description, project));
-        }
-
-        notifyChange();
-        renderTodoList(activeProject.get());
-        clearInputTaskForm();
-    });
-
-    taskForm.querySelector(".close-form-btn")
-        .addEventListener("click", (e) => {
-            clearInputTaskForm();
-        });
-
-    function createProjectField(projectNameText) {
-        const projectItem = document.createElement("div");
-        projectItem.classList.add("project-item", "dynamic");
-        projectItem.dataset.project = projectNameText;
-        projectItem.draggable = "true";
-
-        const projectName = document.createElement("div");
-        projectName.textContent = projectNameText;
-        projectName.classList.add("project-name");
-
-        const projectCount = document.createElement("div");
-        projectCount.classList.add("project-count");
-        projectCount.textContent = "0";
-
-        projectItem.appendChild(projectName);
-        projectItem.appendChild(projectCount);
-
-        // functionality to delete project by dragging to trash bin
-        projectItem.addEventListener("dragstart", (e) => {
-            projectsTrash.classList.add("active");
-            e.dataTransfer.setData("project", projectNameText);
-        });
-
-        // include todo item when dragged into the project
-        projectItem.addEventListener("dragover", (e) => {
-            projectItem.classList.add("todo-dragged-over");
-        });
-        projectItem.addEventListener("dragleave", (e) => {
-            projectItem.classList.remove("todo-dragged-over");
-        });
-        projectItem.addEventListener("drop", (e) => {
-            projectItem.classList.remove("todo-dragged-over");
-            const todoId = e.dataTransfer.getData("todo-id");
-            TodoList.setProject(todoId, projectNameText);
-            updateProjectCounts();
-            renderTodoList(activeProject.get());
-            notifyChange();
-        });
-
-        return projectItem;
+      }
+      return;
     }
-
-    // functionality to capture drop of dragged project
-    document.addEventListener("dragover", (e) => {
-        e.preventDefault(); // to allow drop
-    });
-
-    projectsTrash.addEventListener("drop", (e) => {
-        e.stopPropagation(); // prevent document handler
-        projectsTrash.classList.remove("active");
-
-        const draggedProjectName = e.dataTransfer.getData("project");
-        if (draggedProjectName) {
-            removeProject(draggedProjectName);
-            notifyChange();
-        }
-    });
-
-    document.addEventListener("drop", (e) => {
-        projectsTrash.classList.remove("active");
-    });
-    //-----------------------------------------------------------------
-
-    function removeProject(projectName) {
-        // remove all assigned todos to this project
-        TodoList.removeProject(projectName);
-        const projectItem = projectsListElement
-            .querySelector(`[data-project=${projectName}]`);
-        projectItem.remove();
-
-        // remove project from list of projects
-        const index = projects.indexOf(projectName);
-        if (index !== -1) {
-            projects.splice(index, 1);
-        }
+    if (
+      e.target.classList.contains('new-project-btn') &&
+      e.target.classList.contains('cancel')
+    ) {
+      projectsListElement.querySelector('.new-project-form').remove();
+      return;
     }
+  });
 
-    function renderProjectsList() {
-        // remove all previously created elements 
-        // (important in case updating the projects list)
-        projectsListElement.querySelectorAll(".dynamic")
-            .forEach(el => el.remove());
-        for (const project of projects) {
-            const projectItem = createProjectField(project);
-            projectsListElement.appendChild(projectItem);
-        }
+  function updateProjectCounts() {
+    const projectCounts = TodoList.countProjects();
+    projects.forEach((project) => {
+      if (!(project in projectCounts)) {
+        projectCounts[project] = 0;
+      }
+    });
+    Object.entries(projectCounts).forEach(([projectName, projectCount]) => {
+      const projectCountElement = projectsListElement.querySelector(
+        `[data-project="${projectName}"] .project-count`
+      );
+      projectCountElement.textContent = projectCount;
+    });
+  }
+
+  // logic to remove todo items when task is marked as completed
+  todoListElement.addEventListener('click', (e) => {
+    if (e.target.classList.contains('todo-tick-box')) {
+      const listItem = e.target.closest('.todo-item');
+      // flag task as completed
+      TodoList.completeTask(listItem.dataset.id);
+      // remove element from DOM
+      listItem.remove();
+      // update project counts
+      updateProjectCounts();
+      // notify about this change
+      notifyChange();
+    } else if (e.target.classList.contains('delete-btn')) {
+      const listItem = e.target.closest('.todo-item');
+      // remove todo from TodoList
+      TodoList.removeTask(listItem.dataset.id);
+      // remove element from DOM
+      listItem.remove();
+      // update project counts
+      updateProjectCounts();
+      notifyChange();
+    } else if (e.target.classList.contains('edit-btn')) {
+      renderInputTaskForm();
+      updateInputTaskForm(e.target.dataset.id);
     }
+  });
 
-    projectsListElement.addEventListener("click", (e) => {
-        if (e.target.classList.contains("project-name")) {
-            const projectName = e.target.textContent;
-            renderTodoList(projectName);
+  // button to add new projects
+  document.querySelector('.add-project-btn').addEventListener('click', (e) => {
+    const container = document.createElement('div');
+    container.classList.add('new-project-form');
 
-            // additionally in case of phone layout hide the aside after selecting
-            if (asideElement.classList.contains("visible")) {
-                asideElement.classList.remove("visible");
-                document.querySelector(".show-projects-btn").classList.add("hidden");
-            }
-            return;
-        }
-        if (e.target.classList.contains("new-project-btn") &&
-            e.target.classList.contains("add")) {
-            const input = projectsListElement.querySelector(".new-project-input");
-            const projectName = input.value;
-            if (projectName !== "" && !projects.includes(projectName)) {
-                // remove the input and button fields to add new project
-                projectsListElement.querySelector(".new-project-form").remove();
+    const input = document.createElement('input');
+    input.classList.add('new-project-input');
+    input.placeholder = 'Name of the new project';
+    container.appendChild(input);
 
-                // append the new project item
-                projects.push(projectName);
-                const projectItem = createProjectField(projectName);
-                projectsListElement.appendChild(projectItem);
+    const btnsContainer = document.createElement('div');
+    btnsContainer.classList.add('new-form-btns-container');
 
-                notifyChange();
-            }
-            return;
-        }
-        if (e.target.classList.contains("new-project-btn") &&
-            e.target.classList.contains("cancel")) {
-            projectsListElement.querySelector(".new-project-form").remove();
-            return;
-        }
+    const cancelIcon = document.createElement('img');
+    cancelIcon.src = crossIconSource;
+    cancelIcon.classList.add('new-project-btn', 'cancel');
+    btnsContainer.appendChild(cancelIcon);
+
+    const addProjectIcon = document.createElement('img');
+    addProjectIcon.src = checkIconSource;
+    addProjectIcon.classList.add('new-project-btn', 'add');
+    btnsContainer.appendChild(addProjectIcon);
+
+    container.appendChild(btnsContainer);
+
+    projectsListElement.appendChild(container);
+    input.focus(); // use after element is attached to DOM so browser don't ignores it
+  });
+
+  // button to add new todo
+  document.querySelector('.add-todo-btn').addEventListener('click', () => {
+    renderInputTaskForm();
+  });
+
+  // access the project view by clicking on the ellipsis
+  document
+    .querySelector('.show-projects-btn')
+    .addEventListener('click', (e) => {
+      if (e.target.classList.contains('hidden')) {
+        asideElement.classList.add('visible');
+        e.target.classList.remove('hidden');
+      } else {
+        asideElement.classList.remove('visible');
+        e.target.classList.add('hidden');
+      }
     });
 
-    function updateProjectCounts() {
-        const projectCounts = TodoList.countProjects();
-        projects.forEach(project => {
-            if (!(project in projectCounts)) {
-                projectCounts[project] = 0;
-            }
-        });
-        Object.entries(projectCounts).forEach(([projectName, projectCount]) => {
-            const projectCountElement = projectsListElement.querySelector(`[data-project="${projectName}"] .project-count`);
-            projectCountElement.textContent = projectCount;
-        });
-    }
-
-    // logic to remove todo items when task is marked as completed
-    todoListElement.addEventListener("click", (e) => {
-        if (e.target.classList.contains("todo-tick-box")) {
-            const listItem = e.target.closest(".todo-item");
-            // flag task as completed
-            TodoList.completeTask(listItem.dataset.id);
-            // remove element from DOM
-            listItem.remove();
-            // update project counts
-            updateProjectCounts();
-            // notify about this change 
-            notifyChange();
-        } else if (e.target.classList.contains("delete-btn")) {
-            const listItem = e.target.closest(".todo-item");
-            // remove todo from TodoList
-            TodoList.removeTask(listItem.dataset.id);
-            // remove element from DOM
-            listItem.remove();
-            // update project counts
-            updateProjectCounts();
-            notifyChange();
-        } else if (e.target.classList.contains("edit-btn")) {
-            renderInputTaskForm();
-            updateInputTaskForm(e.target.dataset.id);
-        }
-    });
-
-    // button to add new projects
-    document.querySelector(".add-project-btn")
-        .addEventListener("click", (e) => {
-            const container = document.createElement("div");
-            container.classList.add("new-project-form");
-
-            const input = document.createElement("input");
-            input.classList.add("new-project-input");
-            input.placeholder = "Name of the new project";
-            container.appendChild(input);
-
-            const btnsContainer = document.createElement("div");
-            btnsContainer.classList.add("new-form-btns-container");
-
-            const cancelIcon = document.createElement("img");
-            cancelIcon.src = crossIconSource;
-            cancelIcon.classList.add("new-project-btn", "cancel");
-            btnsContainer.appendChild(cancelIcon);
-
-            const addProjectIcon = document.createElement("img");
-            addProjectIcon.src = checkIconSource;
-            addProjectIcon.classList.add("new-project-btn", "add");
-            btnsContainer.appendChild(addProjectIcon);
-
-            container.appendChild(btnsContainer);
-
-            projectsListElement.appendChild(container);
-            input.focus(); // use after element is attached to DOM so browser don't ignores it
-        });
-
-    // button to add new todo
-    document.querySelector(".add-todo-btn")
-        .addEventListener("click", () => {
-            renderInputTaskForm();
-        });
-
-    // access the project view by clicking on the ellipsis 
-    document.querySelector(".show-projects-btn")
-        .addEventListener("click", (e) => {
-            if (e.target.classList.contains("hidden")) {
-                asideElement.classList.add("visible");
-                e.target.classList.remove("hidden")
-            } else {
-                asideElement.classList.remove("visible");
-                e.target.classList.add("hidden")
-            }
-        });
-
-    return {
-        renderTodoList,
-        renderProjectsList
-    }
+  return {
+    renderTodoList,
+    renderProjectsList,
+  };
 };
