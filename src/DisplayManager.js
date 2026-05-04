@@ -389,6 +389,9 @@ export const createDisplayManager = (
     if (draggedProjectName) {
       removeProject(draggedProjectName);
       notifyChange();
+      if (draggedProjectName === activeProject.get()) {
+        renderTodoList(defaultProject);
+      }
     }
   });
 
